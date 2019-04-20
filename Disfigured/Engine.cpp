@@ -38,6 +38,7 @@ void Engine::start()
 void Engine::init()
 {
 	InputManager::registerKeyboardInput(this);
+
 	window = new Window(WIDTH, HEIGHT, "Plastic Surgery");
 	imageProgram = new ShaderProgram(imageVertPath, imageFragPath);
 	lineProgram = new ShaderProgram(lineVertPath, lineFragPath);
@@ -61,6 +62,10 @@ void Engine::init()
 	fillTool = new FillTool();
 	InputManager::registerMouseClickInput(fillTool);
 	fillTool->use();
+
+	colorPicker = new ColorPicker();
+	InputManager::registerMouseClickInput(colorPicker);
+	//colorPicker->use(); //don't activate it yet
 
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);
@@ -169,6 +174,18 @@ void Engine::handleKeyboardInput(int key, int action)
 		saveImage("output/niqqa.png");
 	}
 	else if (key == GLFW_KEY_P && action == GLFW_PRESS) {
-		//something to switch to color picker
+		//std::cout << "clicked p" << std::endl;
+		colorPicker->use();
+		pencil->unuse();
+		eraser->unuse();
+		fillTool->unuse();
+
+	}
+	else if (key == GLFW_KEY_P && action == GLFW_RELEASE) {
+		//std::cout << "unclicked p" << std::endl;
+		colorPicker->unuse();
+		pencil->use();
+		eraser->use();
+		fillTool->use();
 	}
 }

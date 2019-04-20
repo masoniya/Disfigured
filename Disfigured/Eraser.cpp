@@ -37,7 +37,7 @@ void Eraser::use()
 
 void Eraser::unuse()
 {
-	active = true;
+	active = false;
 }
 
 void Eraser::drawLines(ShaderProgram *program)

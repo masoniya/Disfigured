@@ -10,6 +10,7 @@
 #include "KeyboardControl.h"
 #include "ColorBox.h"
 #include "FillTool.h"
+#include "ColorPicker.h"
 
 
 class Engine : public KeyboardControl
@@ -32,6 +33,7 @@ private:
 	Eraser* eraser;
 	ColorBox* colorBox;
 	FillTool* fillTool;
+	ColorPicker* colorPicker;
 
 	bool shouldDrawImage;
 

@@ -59,7 +59,7 @@ void InputManager::handleKeyboardInput(int key, int action)
 
 void InputManager::handleMouseClickInput(int button, int action)
 {
-	std::cout << "button : " << button << " action : " << action << std::endl;
+	//std::cout << "button : " << button << " action : " << action << std::endl;
 	for (MouseClickControl* object : mouseClickControlObjects) {
 		object->handleMouseClick(button, action, cursorLastXPos, cursorLastYPos);
 	}

@@ -37,7 +37,7 @@ void Pencil::use()
 
 void Pencil::unuse()
 {
-	active = true;
+	active = false;
 }
 
 void Pencil::drawLines(ShaderProgram *program)
