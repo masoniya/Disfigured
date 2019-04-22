@@ -132,7 +132,7 @@ bool FillTool::fill_Color(int xPos, int yPos, unsigned char (&fillColor)[4], uns
 	}
 
 	//coords out of bounds
-	if (xPos < 0 || xPos > width || yPos < 0 || yPos > height) {
+	if (xPos < 0 || xPos > width - 1 || yPos < 0 || yPos > height - 1) {
 		return 0;
 	}
 
