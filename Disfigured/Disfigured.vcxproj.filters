@@ -54,14 +54,8 @@
     <ClCompile Include="ToString.cpp">
       <Filter>Source Files\Utility</Filter>
     </ClCompile>
-    <ClCompile Include="Pencil.cpp">
-      <Filter>Source Files\Tools</Filter>
-    </ClCompile>
     <ClCompile Include="CoordinateTransform.cpp">
       <Filter>Source Files\Utility</Filter>
-    </ClCompile>
-    <ClCompile Include="Eraser.cpp">
-      <Filter>Source Files\Tools</Filter>
     </ClCompile>
     <ClCompile Include="save.c">
       <Filter>Source Files</Filter>
@@ -76,7 +70,7 @@
       <Filter>Source Files\Tools</Filter>
     </ClCompile>
     <ClCompile Include="Brush.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Tools</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -110,14 +104,8 @@
     <ClInclude Include="ToString.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="Pencil.h">
-      <Filter>Header Files\Tools</Filter>
-    </ClInclude>
     <ClInclude Include="CoordinateTransform.h">
       <Filter>Header Files\Utility</Filter>
-    </ClInclude>
-    <ClInclude Include="Eraser.h">
-      <Filter>Header Files\Tools</Filter>
     </ClInclude>
     <ClInclude Include="save.h">
       <Filter>Header Files</Filter>
@@ -132,7 +120,7 @@
       <Filter>Header Files\Tools</Filter>
     </ClInclude>
     <ClInclude Include="Brush.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Tools</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

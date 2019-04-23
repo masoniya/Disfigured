@@ -136,12 +136,10 @@
     <ClCompile Include="ColorPicker.cpp" />
     <ClCompile Include="CoordinateTransform.cpp" />
     <ClCompile Include="Engine.cpp" />
-    <ClCompile Include="Eraser.cpp" />
     <ClCompile Include="FillTool.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Pencil.cpp" />
     <ClCompile Include="save.c" />
     <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="Texture.cpp" />
@@ -154,14 +152,12 @@
     <ClInclude Include="ColorPicker.h" />
     <ClInclude Include="CoordinateTransform.h" />
     <ClInclude Include="Engine.h" />
-    <ClInclude Include="Eraser.h" />
     <ClInclude Include="FillTool.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="KeyboardControl.h" />
     <ClInclude Include="MouseClickControl.h" />
     <ClInclude Include="MouseMoveControl.h" />
     <ClInclude Include="MouseScrollControl.h" />
-    <ClInclude Include="Pencil.h" />
     <ClInclude Include="save.h" />
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="Texture.h" />
