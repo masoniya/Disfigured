@@ -19,6 +19,9 @@ const char* lineFragPath = "shaders/lineShader.frag";
 const char* squareGeomPath = "shaders/squareShader.geom";
 const char* circleGeomPath = "shaders/circleShader.geom";
 
+const char* fSlashGeomPath = "shaders/fSlashShader.geom";
+const char* bSlashGeomPath = "shaders/bSlashShader.geom";
+
 const float imageVertices[] = {
 	-1.0, -1.0,  0.0, 0.0,
 	-1.0,  1.0,  0.0, 1.0,
@@ -39,22 +42,33 @@ void Engine::init()
 {
 	InputManager::registerKeyboardInput(this);
 
+	imageLoaded = false;
+	frameSaved = true;
+
 	window = new Window(WIDTH, HEIGHT, "Plastic Surgery");
 	imageProgram = new ShaderProgram(imageVertPath, imageFragPath);
 	lineProgram = new ShaderProgram(lineVertPath, lineFragPath);
 	pencilProgram = new ShaderProgram(lineVertPath, circleGeomPath, lineFragPath); //pencil
 	eraserProgram = new ShaderProgram(lineVertPath, squareGeomPath, lineFragPath); //eraser
+	caligFProgram = new ShaderProgram(lineVertPath, fSlashGeomPath, lineFragPath); //caligraphy brush (forward)
+	caligBProgram = new ShaderProgram(lineVertPath, bSlashGeomPath, lineFragPath); //caligraphy brush (backward)
+
 	image = loadImage("resources/coo.png");
 
-	pencil = new Pencil();
-	InputManager::registerMouseClickInput(pencil);
-	InputManager::registerMouseMoveInput(pencil);
-	pencil->use();
+	pencil = new Brush(pencilProgram, 1.0f);
+	registerBrush(pencil);
 
-	eraser = new Eraser();
-	InputManager::registerMouseClickInput(eraser);
-	InputManager::registerMouseMoveInput(eraser);
-	eraser->use();
+	eraser = new Brush(eraserProgram, ColorType::background);
+	registerBrush(eraser);
+
+	caligFBrush = new Brush(caligFProgram, 15.0f);
+	registerBrush(caligFBrush);
+
+	caligBBrush = new Brush(caligBProgram, 15.0f);
+	registerBrush(caligBBrush);
+
+	activeBrush = pencil;
+	activeBrush->use();
 
 	colorBox = new ColorBox();
 	window->setActive();
@@ -110,9 +124,22 @@ void Engine::cleanup()
 	delete window;
 }
 
+void Engine::registerBrush(Brush * brush)
+{
+	InputManager::registerMouseClickInput(brush);
+	InputManager::registerMouseMoveInput(brush);
+}
+
+void Engine::useBrush(Brush * brush)
+{
+	activeBrush->unuse();
+	brush->use();
+	activeBrush = brush;
+}
+
 Texture * Engine::loadImage(std::string path)
 {
-	shouldDrawImage = true;
+	imageLoaded = true;
 	return new Texture(path);
 }
 
@@ -125,6 +152,8 @@ void Engine::saveImage(std::string path)
 
 void Engine::drawImage(Texture * image)
 {
+	glClear(GL_COLOR_BUFFER_BIT);
+
 	glActiveTexture(GL_TEXTURE0);
 	image->use();
 
@@ -136,34 +165,51 @@ void Engine::drawImage(Texture * image)
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
+void Engine::saveFrame()
+{
+	unsigned char * pixels = new unsigned char[Window::width * Window::height * 4];
+	glReadPixels(0, 0, Window::width, Window::height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+
+	image->updateContents(Window::width, Window::height, pixels);
+
+	delete pixels;
+
+	frameSaved = true;
+}
+
 void Engine::renderFrame()
 {
-	if (shouldDrawImage) {
-		//window->swapBuffers();
-
+	if (imageLoaded) { //draw a freshly loaded image on an empty canvas
 		drawImage(image);
-		shouldDrawImage = false;
+		imageLoaded = false;
 
 		glFlush();
-		//window->swapBuffers();
+		frameSaved = false;
 	}
 
-	if (pencil->shouldDrawLines()) {
-		pencil->drawLines(pencilProgram);
-		glFlush();
-	}
+	if (activeBrush->shouldDrawLines()) {
+		activeBrush->drawLines();
 
-	if (eraser->shouldDrawLines()) {
-		eraser->drawLines(eraserProgram);
 		glFlush();
+		frameSaved = false;
 	}
 
 	if (fillTool->shouldDrawFrame()) {
 		fillTool->drawFrame(imageProgram, vao);
+
+		glFlush();
+		frameSaved = false;
+	}
+
+	if (!frameSaved) {
+		saveFrame();
+	}
+
+	if (Window::windowResized) {
+		drawImage(image);
 		glFlush();
 	}
 
-	//glClear(GL_COLOR_BUFFER_BIT);
 	glFlush();
 }
 
@@ -174,18 +220,27 @@ void Engine::handleKeyboardInput(int key, int action)
 		saveImage("output/niqqa.png");
 	}
 	else if (key == GLFW_KEY_P && action == GLFW_PRESS) {
-		//std::cout << "clicked p" << std::endl;
 		colorPicker->use();
-		pencil->unuse();
-		eraser->unuse();
-		fillTool->unuse();
+		activeBrush->unuse();
 
 	}
 	else if (key == GLFW_KEY_P && action == GLFW_RELEASE) {
-		//std::cout << "unclicked p" << std::endl;
 		colorPicker->unuse();
-		pencil->use();
-		eraser->use();
-		fillTool->use();
+		activeBrush->use();
 	}
+	
+	//Brush controls
+	else if (key == GLFW_KEY_1 && action == GLFW_PRESS) { // 1 for pencil
+		useBrush(pencil);
+	}
+	else if (key == GLFW_KEY_2 && action == GLFW_PRESS) { // 2 for eraser
+		useBrush(eraser);
+	}
+	else if (key == GLFW_KEY_3 && action == GLFW_PRESS) { // 3 for caligraphy brush (forward)
+		useBrush(caligFBrush);
+	}
+	else if (key == GLFW_KEY_4 && action == GLFW_PRESS) { // 4 for caligraphy brush (backward)
+		useBrush(caligBBrush);
+	}
+	
 }

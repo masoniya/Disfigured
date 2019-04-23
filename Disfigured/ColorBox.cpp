@@ -117,7 +117,6 @@ ColorBox::ColorBox()
 
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 
-	//glfwSwapBuffers(window);
 	glFlush();
 }
 
@@ -133,7 +132,6 @@ static void windowFocusCallback(GLFWwindow* window, int focused)
 	{
 		glfwMakeContextCurrent(window);
 		glViewport(0, 0, ColorBox::width, ColorBox::height);
-		//std::cout << "window 2 came to focus" << std::endl;
 	}
 	else
 	{

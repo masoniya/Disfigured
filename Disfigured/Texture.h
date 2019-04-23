@@ -11,6 +11,8 @@ public:
 
 	void use();
 
+	void updateContents(int width, int height, void * pixels);
+
 	static void setDefaultMinFilter(int filter);
 	static void setDefaultMagFilter(int filter);
 

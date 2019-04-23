@@ -4,6 +4,7 @@
 
 #include "Window.h"
 #include "InputManager.h"
+#include "Engine.h"
 
 
 static void framebufferSizeCallback(GLFWwindow *window, int width, int height);
@@ -12,6 +13,7 @@ static void windowFocusCallback(GLFWwindow* window, int focused);
 
 int Window::width;
 int Window::height;
+bool Window::windowResized = false;
 
 Window::Window(int width, int height, const char * name)
 {
@@ -97,17 +99,16 @@ void Window::checkActive()
 
 void Window::setActive()
 {
-	//glfwMakeContextCurrent(window);
 	glfwFocusWindow(window);
 }
-
 
 static void framebufferSizeCallback(GLFWwindow *window, int width, int height)
 {
 	glViewport(0, 0, width, height);
 	Window::width = width;
 	Window::height = height;
-	//std::cout << "changed window1 size" << std::endl;
+	Window::windowResized = true;
+
 }
 
 static void windowFocusCallback(GLFWwindow* window, int focused)
@@ -116,7 +117,6 @@ static void windowFocusCallback(GLFWwindow* window, int focused)
 	{
 		glfwMakeContextCurrent(window);
 		glViewport(0, 0, Window::width, Window::height);
-		//std::cout << "window 1 came to focus" << std::endl;
 	}
 	else
 	{

@@ -5,12 +5,11 @@
 #include "Window.h"
 #include "ShaderProgram.h"
 #include "Texture.h"
-#include "Pencil.h"
-#include "Eraser.h"
 #include "KeyboardControl.h"
 #include "ColorBox.h"
 #include "FillTool.h"
 #include "ColorPicker.h"
+#include "Brush.h"
 
 
 class Engine : public KeyboardControl
@@ -28,22 +27,35 @@ private:
 	ShaderProgram* lineProgram;
 	ShaderProgram* pencilProgram;
 	ShaderProgram* eraserProgram;
+	ShaderProgram* caligFProgram;
+	ShaderProgram* caligBProgram;
 	Texture* image;
-	Pencil* pencil;
-	Eraser* eraser;
 	ColorBox* colorBox;
 	FillTool* fillTool;
 	ColorPicker* colorPicker;
 
-	bool shouldDrawImage;
+	//available brushes
+	Brush* pencil;
+	Brush* eraser;
+	Brush* caligFBrush;
+	Brush* caligBBrush;
+
+	Brush* activeBrush;
+
+	bool imageLoaded;
+	bool frameSaved;
 
 	void init();
 	void mainLoop();
 	void cleanup();
 
+	void registerBrush(Brush* brush);
+	void useBrush(Brush* brush);
+
 	Texture* loadImage(std::string path);
 	void saveImage(std::string path);
 	void drawImage(Texture* image);
+	void saveFrame();
 
 	void renderFrame();
 

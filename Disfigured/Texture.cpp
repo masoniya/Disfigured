@@ -30,6 +30,15 @@ void Texture::use()
 	glBindTexture(GL_TEXTURE_2D, texture);
 }
 
+void Texture::updateContents(int width, int height, void * pixels)
+{
+	glBindTexture(GL_TEXTURE_2D, texture);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
 void Texture::construct(std::string texturePath, int minFilter, int magFilter)
 {
 	glGenTextures(1, &texture);

@@ -4,6 +4,8 @@
 
 #include <glfw/glfw3.h>
 
+#include "ShaderProgram.h"
+
 
 class Window
 {
@@ -19,6 +21,7 @@ public:
 
 	static int width;
 	static int height;
+	static bool windowResized;
 
 private:
 
