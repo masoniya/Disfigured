@@ -234,6 +234,7 @@ void Engine::renderFrame()
 //master keyboard control
 void Engine::handleKeyboardInput(int key, int action)
 {
+	//Tool controls
 	if (key == GLFW_KEY_S && action == GLFW_PRESS) {
 		saveImageToFile("output/niqqa.png");
 	}
@@ -264,4 +265,31 @@ void Engine::handleKeyboardInput(int key, int action)
 		useBrush(airbrush);
 	}
 	
+	//Console input controls
+	else if (key == GLFW_KEY_C && action == GLFW_PRESS) {
+		int choice;
+		std::cout << "Change foreground color (1)" << std::endl << "Change background color (2)" << std::endl << "Cancel (3)" << std::endl;
+		std::cin >> choice;
+		
+		if (choice == 3) {
+			return;
+		}
+
+		if (choice == 1 || choice == 2) {
+			int r, g, b;
+			std::cout << "Enter new RGB Color (0 - 255) : " << std::endl;
+			std::cout << "R - G - B" << std::endl;
+			std::cin >> r >> g >> b;
+
+			switch (choice) {
+				case 1:
+					ColorBox::foregroundColor = glm::vec3(r / 255.0f, g / 255.0f, b / 255.0f);
+				case 2:
+					ColorBox::backgroundColor = glm::vec3(r / 255.0f, g / 255.0f, b / 255.0f);
+			}
+		}
+
+		system("cls");
+	}
+
 }
