@@ -21,28 +21,30 @@ public:
 
 	void unuse();
 
-	void drawLines();
+	virtual void drawLines();
 
 	bool shouldDrawLines();
 
+protected:
+
+	virtual void handleMouseClick(int button, int action, double xPosition, double yPosition) override;
+	virtual void handleMouseMovement(double xPosition, double yPosition, double xPrevPosition, double yPrevPosition) override;
+
+	std::vector<float> lineVertexData;
+
+	bool active;
+	bool mouseButtonDown;
+
 private:
 
-	GLuint vao;
-	GLuint vbo;
+	unsigned int vao;
+	unsigned int vbo;
 
 	ShaderProgram *program;
 	ColorType colortype;
 
 	float size;
 
-	bool active;
-	bool mouseButtonDown;
-
-	std::vector<float> lineVertexData;
-
 	void construct(ShaderProgram * program, ColorType type, float size);
 	glm::vec3 getColor();
-
-	void handleMouseClick(int button, int action, double xPosition, double yPosition) override;
-	void handleMouseMovement(double xPosition, double yPosition, double xPrevPosition, double yPrevPosition) override;
 };

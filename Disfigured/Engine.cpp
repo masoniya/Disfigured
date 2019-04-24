@@ -13,14 +13,17 @@ int HEIGHT = 600;
 const char* imageVertPath = "shaders/imageShader.vert";
 const char* imageFragPath = "shaders/imageShader.frag";
 
-const char* lineVertPath = "shaders/lineShader.vert";
-const char* lineFragPath = "shaders/lineShader.frag";
+const char* brushVertPath = "shaders/brushShader.vert";
+const char* brushFragPath = "shaders/brushShader.frag";
 
-const char* squareGeomPath = "shaders/squareShader.geom";
-const char* circleGeomPath = "shaders/circleShader.geom";
+const char* pencilGeomPath = "shaders/pencilShader.geom";
+const char* eraserGeomPath = "shaders/eraserShader.geom";
 
-const char* fSlashGeomPath = "shaders/fSlashShader.geom";
-const char* bSlashGeomPath = "shaders/bSlashShader.geom";
+const char* caligFGeomPath = "shaders/caligFShader.geom";
+const char* caligBGeomPath = "shaders/caligBShader.geom";
+
+const char* airbrushGeomPath = "shaders/airbrushShader.geom";
+const char* airbrushFragPath = "shaders/airbrushShader.frag";
 
 const float imageVertices[] = {
 	-1.0, -1.0,  0.0, 0.0,
@@ -47,25 +50,34 @@ void Engine::init()
 
 	window = new Window(WIDTH, HEIGHT, "Plastic Surgery");
 	imageProgram = new ShaderProgram(imageVertPath, imageFragPath);
-	lineProgram = new ShaderProgram(lineVertPath, lineFragPath);
-	pencilProgram = new ShaderProgram(lineVertPath, circleGeomPath, lineFragPath); //pencil
-	eraserProgram = new ShaderProgram(lineVertPath, squareGeomPath, lineFragPath); //eraser
-	caligFProgram = new ShaderProgram(lineVertPath, fSlashGeomPath, lineFragPath); //caligraphy brush (forward)
-	caligBProgram = new ShaderProgram(lineVertPath, bSlashGeomPath, lineFragPath); //caligraphy brush (backward)
+	lineProgram = new ShaderProgram(brushVertPath, brushFragPath);
+	pencilProgram = new ShaderProgram(brushVertPath, pencilGeomPath, brushFragPath); //pencil
+	eraserProgram = new ShaderProgram(brushVertPath, eraserGeomPath, brushFragPath); //eraser
+	caligFProgram = new ShaderProgram(brushVertPath, caligFGeomPath, brushFragPath); //caligraphy brush (forward)
+	caligBProgram = new ShaderProgram(brushVertPath, caligBGeomPath, brushFragPath); //caligraphy brush (backward)
+	airbrushProgram = new ShaderProgram(brushVertPath, airbrushGeomPath, airbrushFragPath); //airbrush
 
 	image = loadImage("resources/coo.png");
 
+	//pencil
 	pencil = new Brush(pencilProgram, 1.0f);
 	registerBrush(pencil);
 
+	//eraser
 	eraser = new Brush(eraserProgram, ColorType::background);
 	registerBrush(eraser);
 
+	//caligraphy brush (forward)
 	caligFBrush = new Brush(caligFProgram, 15.0f);
 	registerBrush(caligFBrush);
 
+	//caligraphy brush (backward)
 	caligBBrush = new Brush(caligBProgram, 15.0f);
 	registerBrush(caligBBrush);
+
+	//airbrush
+	airbrush = new AirBrush(airbrushProgram, 40.0f);
+	registerBrush(airbrush);
 
 	activeBrush = pencil;
 	activeBrush->use();
@@ -112,8 +124,10 @@ void Engine::mainLoop()
 
 		renderFrame();
 
-		//glfwPollEvents();
-		glfwWaitEvents();
+		//glfwPollEvents(); //for uncapped framerate
+		//glfwWaitEventsTimeout(0.01677777); //around 60 fps
+		glfwWaitEventsTimeout(0.03444444); //around 30 fps
+		//glfwWaitEvents(); //for complete input waiting
 	}
 }
 
@@ -143,7 +157,7 @@ Texture * Engine::loadImage(std::string path)
 	return new Texture(path);
 }
 
-void Engine::saveImage(std::string path)
+void Engine::saveImageToFile(std::string path)
 {
 	unsigned char* pixels = new unsigned char[Window::width * Window::height * 4];
 	glReadPixels(0, 0, Window::width, Window::height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
@@ -165,7 +179,7 @@ void Engine::drawImage(Texture * image)
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-void Engine::saveFrame()
+void Engine::saveFrameToImage()
 {
 	unsigned char * pixels = new unsigned char[Window::width * Window::height * 4];
 	glReadPixels(0, 0, Window::width, Window::height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
@@ -187,6 +201,10 @@ void Engine::renderFrame()
 		frameSaved = false;
 	}
 
+	if (activeBrush == airbrush) {
+		airbrush->update();
+	}
+
 	if (activeBrush->shouldDrawLines()) {
 		activeBrush->drawLines();
 
@@ -202,7 +220,7 @@ void Engine::renderFrame()
 	}
 
 	if (!frameSaved) {
-		saveFrame();
+		saveFrameToImage();
 	}
 
 	if (Window::windowResized) {
@@ -217,7 +235,7 @@ void Engine::renderFrame()
 void Engine::handleKeyboardInput(int key, int action)
 {
 	if (key == GLFW_KEY_S && action == GLFW_PRESS) {
-		saveImage("output/niqqa.png");
+		saveImageToFile("output/niqqa.png");
 	}
 	else if (key == GLFW_KEY_P && action == GLFW_PRESS) {
 		colorPicker->use();
@@ -241,6 +259,9 @@ void Engine::handleKeyboardInput(int key, int action)
 	}
 	else if (key == GLFW_KEY_4 && action == GLFW_PRESS) { // 4 for caligraphy brush (backward)
 		useBrush(caligBBrush);
+	}
+	else if (key == GLFW_KEY_5 && action == GLFW_PRESS) { // 5 for airbrush
+		useBrush(airbrush);
 	}
 	
 }

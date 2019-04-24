@@ -90,6 +90,7 @@ void Brush::drawLines()
 	program->setUniformVec3("color", getColor());
 	program->setUniformFloat("width", size / Window::width);
 	program->setUniformFloat("height", size / Window::height);
+	program->setUniformFloat("seed", (float)sin(glfwGetTime()));
 
 	glBindVertexArray(vao);
 	glDrawArrays(GL_LINES, 0, (GLsizei)lineVertexData.size() / 2);

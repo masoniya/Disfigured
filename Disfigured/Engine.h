@@ -10,6 +10,7 @@
 #include "FillTool.h"
 #include "ColorPicker.h"
 #include "Brush.h"
+#include "AirBrush.h"
 
 
 class Engine : public KeyboardControl
@@ -19,26 +20,31 @@ public:
 	void start();
 
 private:
+
 	GLuint vao;
 	GLuint vbo;
 
 	Window* window;
+	Texture* image;
+	ColorBox* colorBox;
+	FillTool* fillTool;
+	ColorPicker* colorPicker;
+
+	//shaders
 	ShaderProgram* imageProgram;
 	ShaderProgram* lineProgram;
 	ShaderProgram* pencilProgram;
 	ShaderProgram* eraserProgram;
 	ShaderProgram* caligFProgram;
 	ShaderProgram* caligBProgram;
-	Texture* image;
-	ColorBox* colorBox;
-	FillTool* fillTool;
-	ColorPicker* colorPicker;
+	ShaderProgram* airbrushProgram;
 
 	//available brushes
 	Brush* pencil;
 	Brush* eraser;
 	Brush* caligFBrush;
 	Brush* caligBBrush;
+	AirBrush* airbrush; //separate class because it has different behavior
 
 	Brush* activeBrush;
 
@@ -49,15 +55,16 @@ private:
 	void mainLoop();
 	void cleanup();
 
+	void renderFrame();
+
+
 	void registerBrush(Brush* brush);
 	void useBrush(Brush* brush);
 
 	Texture* loadImage(std::string path);
-	void saveImage(std::string path);
+	void saveImageToFile(std::string path);
 	void drawImage(Texture* image);
-	void saveFrame();
-
-	void renderFrame();
+	void saveFrameToImage();
 
 	void handleKeyboardInput(int key, int action) override;
 };

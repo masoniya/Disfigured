@@ -19,7 +19,7 @@ void main(){
 	//unnecessary to draw both circles, skipping one for efficiency
 	
 	//circle at inital cursor positon
-	//drawCircle(c1x, c1y, radius, numSegments);
+	//drawCircle(c1x, c1y, width, height, numSegments);
 	
 	
 	//circle at final cursor position

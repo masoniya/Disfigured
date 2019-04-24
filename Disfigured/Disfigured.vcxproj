@@ -131,6 +131,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AirBrush.cpp" />
     <ClCompile Include="Brush.cpp" />
     <ClCompile Include="ColorBox.cpp" />
     <ClCompile Include="ColorPicker.cpp" />
@@ -147,6 +148,7 @@
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AirBrush.h" />
     <ClInclude Include="Brush.h" />
     <ClInclude Include="ColorBox.h" />
     <ClInclude Include="ColorPicker.h" />
