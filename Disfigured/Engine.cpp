@@ -5,6 +5,7 @@
 #include "Engine.h"
 #include "InputManager.h"
 #include "save.h"
+#include "ColorTransform.h"
 
 
 int WIDTH = 800;
@@ -235,15 +236,18 @@ void Engine::renderFrame()
 void Engine::handleKeyboardInput(int key, int action)
 {
 	//Tool controls
-	if (key == GLFW_KEY_S && action == GLFW_PRESS) {
+	if (key == GLFW_KEY_S && action == GLFW_PRESS) { // s to save
+		std::cout << "Saved image" << std::endl;
 		saveImageToFile("output/niqqa.png");
 	}
-	else if (key == GLFW_KEY_P && action == GLFW_PRESS) {
+	else if (key == GLFW_KEY_P && action == GLFW_PRESS) { // hold p for color picker
+		std::cout << "Color picker active" << std::endl;
 		colorPicker->use();
 		activeBrush->unuse();
 
 	}
-	else if (key == GLFW_KEY_P && action == GLFW_RELEASE) {
+	else if (key == GLFW_KEY_P && action == GLFW_RELEASE) { // release p for no color picker
+		std::cout << "Color picker inactive" << std::endl;
 		colorPicker->unuse();
 		activeBrush->use();
 	}
@@ -266,27 +270,70 @@ void Engine::handleKeyboardInput(int key, int action)
 	}
 	
 	//Console input controls
-	else if (key == GLFW_KEY_C && action == GLFW_PRESS) {
-		int choice;
+	else if (key == GLFW_KEY_C && action == GLFW_PRESS) { // c to change color
+		int colorChoice;
 		std::cout << "Change foreground color (1)" << std::endl << "Change background color (2)" << std::endl << "Cancel (3)" << std::endl;
-		std::cin >> choice;
+		std::cin >> colorChoice;
 		
-		if (choice == 3) {
+		if (colorChoice == 3) {
 			return;
 		}
 
-		if (choice == 1 || choice == 2) {
-			int r, g, b;
-			std::cout << "Enter new RGB Color (0 - 255) : " << std::endl;
-			std::cout << "R - G - B" << std::endl;
-			std::cin >> r >> g >> b;
+		if (colorChoice == 1 || colorChoice == 2) {
+			int modeChoice;
+			std::cout << "RGB (1)" << std::endl << "HSL (2)" << std::endl << "Cancel (3)" << std::endl;
+			std::cin >> modeChoice;
 
-			switch (choice) {
-				case 1:
-					ColorBox::foregroundColor = glm::vec3(r / 255.0f, g / 255.0f, b / 255.0f);
-				case 2:
-					ColorBox::backgroundColor = glm::vec3(r / 255.0f, g / 255.0f, b / 255.0f);
+			if (modeChoice == 3) {
+				return;
 			}
+
+			if (modeChoice == 1) {
+				float r, g, b;
+				std::cout << "Enter new RGB Color (0 - 255) : " << std::endl;
+				std::cout << "R - G - B" << std::endl;
+				std::cin >> r >> g >> b;
+
+				r = glm::clamp(r, 0.0f, 255.0f);
+				g = glm::clamp(g, 0.0f, 255.0f);
+				b = glm::clamp(b, 0.0f, 255.0f);
+
+				r /= 255.0f;
+				g /= 255.0f;
+				b /= 255.0f;
+
+				switch (colorChoice) {
+				case 1:
+					ColorBox::foregroundColor = glm::vec3(r, g, b);
+				case 2:
+					ColorBox::backgroundColor = glm::vec3(r, g, b);
+				}
+			}
+
+			else if (modeChoice == 2) {
+				float h, s, l, r, g, b;
+				std::cout << "Enter new HSL Color (0 - 240) : " << std::endl;
+				std::cout << "H - S - L" << std::endl;
+				std::cin >> h >> s >> l;
+
+				h = glm::clamp(h, 0.0f, 240.0f);
+				s = glm::clamp(s, 0.0f, 240.0f);
+				l = glm::clamp(l, 0.0f, 240.0f);
+
+				h /= 240.0f;
+				s /= 240.0f;
+				l /= 240.0f;
+
+				hsl_to_rgb(h, s, l, &r, &g, &b);
+
+				switch (colorChoice) {
+				case 1:
+					ColorBox::foregroundColor = glm::vec3(r, g, b);
+				case 2:
+					ColorBox::backgroundColor = glm::vec3(r, g, b);
+				}
+			}
+
 		}
 
 		system("cls");

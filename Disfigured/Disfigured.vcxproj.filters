@@ -36,9 +36,6 @@
     <ClCompile Include="glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Engine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -77,6 +74,12 @@
     </ClCompile>
     <ClCompile Include="CoordTransform.cpp">
       <Filter>Source Files\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="ClipBoard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine.cpp">
+      <Filter>Source Files\Tools</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -133,6 +136,9 @@
     </ClInclude>
     <ClInclude Include="CoordTransform.h">
       <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="ClipBoard.h">
+      <Filter>Header Files\Tools</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -27,23 +27,20 @@ public:
 
 protected:
 
-	virtual void handleMouseClick(int button, int action, double xPosition, double yPosition) override;
-	virtual void handleMouseMovement(double xPosition, double yPosition, double xPrevPosition, double yPrevPosition) override;
+	unsigned int vao;
+	unsigned int vbo;
+
+	ShaderProgram *program;
+	ColorType colortype;
+	float size;
 
 	std::vector<float> lineVertexData;
 
 	bool active;
 	bool mouseButtonDown;
 
-private:
-
-	unsigned int vao;
-	unsigned int vbo;
-
-	ShaderProgram *program;
-	ColorType colortype;
-
-	float size;
+	virtual void handleMouseClick(int button, int action, double xPosition, double yPosition) override;
+	virtual void handleMouseMovement(double xPosition, double yPosition, double xPrevPosition, double yPrevPosition) override;
 
 	void construct(ShaderProgram * program, ColorType type, float size);
 	glm::vec3 getColor();
