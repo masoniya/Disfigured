@@ -6,7 +6,7 @@
 #include "ColorBox.h"
 #include "ShaderProgram.h"
 #include "InputManager.h"
-#include "CoordinateTransform.h"
+#include "CoordTransform.h"
 #include "ToString.h"
 
 

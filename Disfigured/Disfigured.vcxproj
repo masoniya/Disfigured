@@ -135,7 +135,8 @@
     <ClCompile Include="Brush.cpp" />
     <ClCompile Include="ColorBox.cpp" />
     <ClCompile Include="ColorPicker.cpp" />
-    <ClCompile Include="CoordinateTransform.cpp" />
+    <ClCompile Include="ColorTransform.cpp" />
+    <ClCompile Include="CoordTransform.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="FillTool.cpp" />
     <ClCompile Include="glad.c" />
@@ -152,7 +153,8 @@
     <ClInclude Include="Brush.h" />
     <ClInclude Include="ColorBox.h" />
     <ClInclude Include="ColorPicker.h" />
-    <ClInclude Include="CoordinateTransform.h" />
+    <ClInclude Include="ColorTransform.h" />
+    <ClInclude Include="CoordTransform.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="FillTool.h" />
     <ClInclude Include="InputManager.h" />

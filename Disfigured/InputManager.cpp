@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "InputManager.h"
-#include "CoordinateTransform.h"
+#include "CoordTransform.h"
 #include "Window.h"
 
 

@@ -5,7 +5,7 @@
 
 #include "FillTool.h"
 #include "Window.h"
-#include "CoordinateTransform.h"
+#include "CoordTransform.h"
 #include "ColorBox.h"
 
 
