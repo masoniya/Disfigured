@@ -143,6 +143,7 @@
     <ClCompile Include="glad.c" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Marker.cpp" />
     <ClCompile Include="save.c" />
     <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="Texture.cpp" />
@@ -161,6 +162,7 @@
     <ClInclude Include="FillTool.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="KeyboardControl.h" />
+    <ClInclude Include="Marker.h" />
     <ClInclude Include="MouseClickControl.h" />
     <ClInclude Include="MouseMoveControl.h" />
     <ClInclude Include="MouseScrollControl.h" />

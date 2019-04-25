@@ -11,6 +11,7 @@
 #include "ColorPicker.h"
 #include "Brush.h"
 #include "AirBrush.h"
+#include "Marker.h"
 
 
 class Engine : public KeyboardControl
@@ -38,13 +39,16 @@ private:
 	ShaderProgram* caligFProgram;
 	ShaderProgram* caligBProgram;
 	ShaderProgram* airbrushProgram;
+	ShaderProgram* markerProgram;
 
 	//available brushes
 	Brush* pencil;
 	Brush* eraser;
 	Brush* caligFBrush;
 	Brush* caligBBrush;
+
 	AirBrush* airbrush; //separate class because it has different behavior
+	Marker* marker; //separate class because of weird shape and opacity behavior
 
 	Brush* activeBrush;
 

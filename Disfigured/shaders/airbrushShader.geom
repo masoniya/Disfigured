@@ -1,6 +1,6 @@
 #version 440 core
 
-layout (lines) in;
+layout (points) in;
 layout (triangle_strip, max_vertices = 66) out;
 
 uniform float width;
@@ -13,15 +13,15 @@ void main(){
 
 	float c1x = gl_in[0].gl_Position.x;
 	float c1y = gl_in[0].gl_Position.y;
-	float c2x = gl_in[1].gl_Position.x;
-	float c2y = gl_in[1].gl_Position.y;
+	//float c2x = gl_in[1].gl_Position.x;
+	//float c2y = gl_in[1].gl_Position.y;
 	
 	
 	//circle at inital cursor positon
-	//drawCircle(c1x, c1y, width, height, numSegments);
+	drawCircle(c1x, c1y, width, height, numSegments);
 	
 	//circle at final cursor position
-	drawCircle(c2x, c2y, width, height, numSegments);
+	//drawCircle(c2x, c2y, width, height, numSegments);
 }
 
 

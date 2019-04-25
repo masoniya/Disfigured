@@ -80,7 +80,7 @@ void Brush::unuse()
 	active = false;
 }
 
-void Brush::drawLines()
+void Brush::draw()
 {
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, lineVertexData.size() * sizeof(float), lineVertexData.data(), GL_DYNAMIC_DRAW);
@@ -90,7 +90,6 @@ void Brush::drawLines()
 	program->setUniformVec3("color", getColor());
 	program->setUniformFloat("width", size / Window::width);
 	program->setUniformFloat("height", size / Window::height);
-	program->setUniformFloat("seed", (float)sin(glfwGetTime()));
 
 	glBindVertexArray(vao);
 	glDrawArrays(GL_LINES, 0, (GLsizei)lineVertexData.size() / 2);

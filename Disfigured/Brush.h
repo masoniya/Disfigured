@@ -21,7 +21,7 @@ public:
 
 	void unuse();
 
-	virtual void drawLines();
+	virtual void draw();
 
 	bool shouldDrawLines();
 

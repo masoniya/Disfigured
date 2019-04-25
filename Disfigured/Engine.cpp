@@ -26,6 +26,9 @@ const char* caligBGeomPath = "shaders/caligBShader.geom";
 const char* airbrushGeomPath = "shaders/airbrushShader.geom";
 const char* airbrushFragPath = "shaders/airbrushShader.frag";
 
+const char* markerGeomPath = "shaders/markerShader.geom";
+const char* markerFragpath = "shaders/markerShader.frag";
+
 const float imageVertices[] = {
 	-1.0, -1.0,  0.0, 0.0,
 	-1.0,  1.0,  0.0, 1.0,
@@ -56,6 +59,7 @@ void Engine::init()
 	eraserProgram = new ShaderProgram(brushVertPath, eraserGeomPath, brushFragPath); //eraser
 	caligFProgram = new ShaderProgram(brushVertPath, caligFGeomPath, brushFragPath); //caligraphy brush (forward)
 	caligBProgram = new ShaderProgram(brushVertPath, caligBGeomPath, brushFragPath); //caligraphy brush (backward)
+	markerProgram = new ShaderProgram(brushVertPath, markerGeomPath, markerFragpath); //marker
 	airbrushProgram = new ShaderProgram(brushVertPath, airbrushGeomPath, airbrushFragPath); //airbrush
 
 	image = loadImage("resources/coo.png");
@@ -80,20 +84,28 @@ void Engine::init()
 	airbrush = new AirBrush(airbrushProgram, 40.0f);
 	registerBrush(airbrush);
 
+	//marker
+	marker = new Marker(markerProgram, 25.0f);
+	registerBrush(marker);
+
+	//active pencil by default
 	activeBrush = pencil;
 	activeBrush->use();
 
+	//create color box then switch back to main window
 	colorBox = new ColorBox();
 	window->setActive();
 
+	//filltool
 	fillTool = new FillTool();
 	InputManager::registerMouseClickInput(fillTool);
 	fillTool->use();
 
+	//color picker
 	colorPicker = new ColorPicker();
 	InputManager::registerMouseClickInput(colorPicker);
-	//colorPicker->use(); //don't activate it yet
 
+	//image vertex data
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);
 
@@ -112,11 +124,18 @@ void Engine::init()
 	
 	glBindVertexArray(0);
 
+	//choose front buffer as both draw and read target
 	glDrawBuffer(GL_FRONT);
 	glReadBuffer(GL_FRONT);
+
 	glClear(GL_COLOR_BUFFER_BIT);
 
+	//no brush uses this for now
 	glLineWidth(4.0f);
+
+	//enable alpha blending
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void Engine::mainLoop()
@@ -207,7 +226,7 @@ void Engine::renderFrame()
 	}
 
 	if (activeBrush->shouldDrawLines()) {
-		activeBrush->drawLines();
+		activeBrush->draw();
 
 		glFlush();
 		frameSaved = false;
@@ -267,6 +286,9 @@ void Engine::handleKeyboardInput(int key, int action)
 	}
 	else if (key == GLFW_KEY_5 && action == GLFW_PRESS) { // 5 for airbrush
 		useBrush(airbrush);
+	}
+	else if (key == GLFW_KEY_6 && action == GLFW_PRESS) { // 6 for marker
+		useBrush(marker);
 	}
 	
 	//Console input controls
