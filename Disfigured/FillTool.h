@@ -2,16 +2,17 @@
 
 #include "MouseClickControl.h"
 #include "ShaderProgram.h"
+#include "Tool.h"
 
 
-class FillTool : public MouseClickControl
+class FillTool : public MouseClickControl, public Tool
 {
 public:
 	FillTool();
 
-	void use();
+	void use() override;
 
-	void unuse();
+	void unuse() override;
 
 	void drawFrame(ShaderProgram* program, unsigned int vao);
 

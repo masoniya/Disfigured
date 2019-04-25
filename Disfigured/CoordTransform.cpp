@@ -17,6 +17,14 @@ void screenToNormalizedScreenCoords(double xCoord, double yCoord, double * norma
 #endif
 }
 
+void normalizedScreenToScreenCoords(double normalizedXCoord, double normalizedYCoord, int * xCoord, int * yCoord, int width, int height)
+{
+	double x, y;
+	normalizedScreenToScreenCoords(normalizedXCoord, normalizedYCoord, &x, &y, width, height);
+	*xCoord = (int)x;
+	*yCoord = (int)y;
+}
+
 void normalizedScreenToScreenCoords(double normalizedXCoord, double normalizedYCoord, double * xCoord, double * yCoord, int width, int height)
 {
 	*xCoord = (normalizedXCoord + 1) / 2 * width;

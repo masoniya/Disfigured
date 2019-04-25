@@ -12,6 +12,8 @@
 #include "Brush.h"
 #include "AirBrush.h"
 #include "Marker.h"
+#include "ClipBoard.h"
+#include "Tool.h"
 
 
 class Engine : public KeyboardControl
@@ -30,6 +32,7 @@ private:
 	ColorBox* colorBox;
 	FillTool* fillTool;
 	ColorPicker* colorPicker;
+	ClipBoard* clipBoard;
 
 	//shaders
 	ShaderProgram* imageProgram;
@@ -51,6 +54,8 @@ private:
 	Marker* marker; //separate class because of weird shape and opacity behavior
 
 	Brush* activeBrush;
+	Tool* activeTool;
+
 
 	bool imageLoaded;
 	bool frameSaved;
@@ -61,9 +66,14 @@ private:
 
 	void renderFrame();
 
+	void initShaders();
+	void initBrushes();
+	void initTools();
+	void initVertexData();
 
 	void registerBrush(Brush* brush);
 	void useBrush(Brush* brush);
+	void useTool(Tool* tool);
 
 	Texture* loadImage(std::string path);
 	void saveImageToFile(std::string path);

@@ -45,6 +45,8 @@ void FillTool::unuse()
 
 void FillTool::drawFrame(ShaderProgram * program, unsigned int vao)
 {
+	glDisable(GL_BLEND);
+
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);
 
@@ -56,6 +58,8 @@ void FillTool::drawFrame(ShaderProgram * program, unsigned int vao)
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 
 	shouldDraw = false;
+
+	glEnable(GL_BLEND);
 }
 
 bool FillTool::shouldDrawFrame()
@@ -66,7 +70,7 @@ bool FillTool::shouldDrawFrame()
 void FillTool::handleMouseClick(int button, int action, double xPosition, double yPosition)
 {
 	if (active) {
-		if (!shouldDrawFrame() && button == GLFW_MOUSE_BUTTON_3 && action == GLFW_PRESS) {
+		if (!shouldDrawFrame() && button == GLFW_MOUSE_BUTTON_1 && action == GLFW_PRESS) {
 
 			pixels = new unsigned char[Window::width * Window::height * 4];
 			glReadPixels(0, 0, Window::width, Window::height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);

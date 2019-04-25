@@ -1,16 +1,17 @@
 #pragma once
 
 #include "MouseClickControl.h"
+#include "Tool.h"
 
 
-class ColorPicker : public MouseClickControl
+class ColorPicker : public MouseClickControl, public Tool
 {
 public:
 	ColorPicker();
 
-	void use();
+	void use() override;
 
-	void unuse();
+	void unuse() override;
 
 	void handleMouseClick(int button, int action, double xPosition, double yPosition) override;
 

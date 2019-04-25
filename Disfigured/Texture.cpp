@@ -30,11 +30,17 @@ void Texture::use()
 	glBindTexture(GL_TEXTURE_2D, texture);
 }
 
-void Texture::updateContents(int width, int height, void * pixels)
+void Texture::updateContents(int width, int height, void * pixels, int numChannels)
 {
 	glBindTexture(GL_TEXTURE_2D, texture);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+	if (numChannels == 3) {
+		//don't forget to pad if not using 1 byte unpack alignment
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+	}
+	else if (numChannels == 4) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+	}
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 }

@@ -12,7 +12,7 @@ int WIDTH = 800;
 int HEIGHT = 600;
 
 const char* imageVertPath = "shaders/imageShader.vert";
-const char* imageFragPath = "shaders/imageShader.frag";
+const char* imageFragPath = "shaders/imageShader.frag"; 
 
 const char* brushVertPath = "shaders/brushShader.vert";
 const char* brushFragPath = "shaders/brushShader.frag";
@@ -30,12 +30,12 @@ const char* markerGeomPath = "shaders/markerShader.geom";
 const char* markerFragpath = "shaders/markerShader.frag";
 
 const float imageVertices[] = {
-	-1.0, -1.0,  0.0, 0.0,
-	-1.0,  1.0,  0.0, 1.0,
-	 1.0, -1.0,  1.0, 0.0,
-	 1.0,  1.0,  1.0, 1.0,
-	 1.0, -1.0,  1.0, 0.0,
-	-1.0,  1.0,  0.0, 1.0,
+	-1.0, -1.0,  0.0, 0.0, //bottom left
+	-1.0,  1.0,  0.0, 1.0, //top left
+	 1.0, -1.0,  1.0, 0.0, //bottom right
+	 1.0,  1.0,  1.0, 1.0, //top right
+	 1.0, -1.0,  1.0, 0.0, //bottom right
+	-1.0,  1.0,  0.0, 1.0, //top left
 };
 
 void Engine::start()
@@ -53,17 +53,48 @@ void Engine::init()
 	frameSaved = true;
 
 	window = new Window(WIDTH, HEIGHT, "Plastic Surgery");
-	imageProgram = new ShaderProgram(imageVertPath, imageFragPath);
-	lineProgram = new ShaderProgram(brushVertPath, brushFragPath);
+
+	initShaders();
+	
+	image = loadImage("resources/coo.png");
+
+	initBrushes();
+	
+	initTools();
+
+	initVertexData();
+
+	//choose front buffer as both draw and read target
+	glDrawBuffer(GL_FRONT);
+	glReadBuffer(GL_FRONT);
+	
+	//prepare buffer for drawing
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	//glLineWidth(4.0f);
+
+	//enable alpha blending
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1); //reading from client memory
+	glPixelStorei(GL_PACK_ALIGNMENT, 1); //writing to client memory
+}
+
+void Engine::initShaders()
+{
+	imageProgram = new ShaderProgram(imageVertPath, imageFragPath); //frame image
+	lineProgram = new ShaderProgram(brushVertPath, brushFragPath); //lines (unused)
 	pencilProgram = new ShaderProgram(brushVertPath, pencilGeomPath, brushFragPath); //pencil
 	eraserProgram = new ShaderProgram(brushVertPath, eraserGeomPath, brushFragPath); //eraser
 	caligFProgram = new ShaderProgram(brushVertPath, caligFGeomPath, brushFragPath); //caligraphy brush (forward)
 	caligBProgram = new ShaderProgram(brushVertPath, caligBGeomPath, brushFragPath); //caligraphy brush (backward)
 	markerProgram = new ShaderProgram(brushVertPath, markerGeomPath, markerFragpath); //marker
 	airbrushProgram = new ShaderProgram(brushVertPath, airbrushGeomPath, airbrushFragPath); //airbrush
+}
 
-	image = loadImage("resources/coo.png");
-
+void Engine::initBrushes()
+{
 	//pencil
 	pencil = new Brush(pencilProgram, 1.0f);
 	registerBrush(pencil);
@@ -88,10 +119,13 @@ void Engine::init()
 	marker = new Marker(markerProgram, 25.0f);
 	registerBrush(marker);
 
-	//active pencil by default
+	//activate pencil by default
 	activeBrush = pencil;
 	activeBrush->use();
+}
 
+void Engine::initTools()
+{
 	//create color box then switch back to main window
 	colorBox = new ColorBox();
 	window->setActive();
@@ -99,12 +133,21 @@ void Engine::init()
 	//filltool
 	fillTool = new FillTool();
 	InputManager::registerMouseClickInput(fillTool);
-	fillTool->use();
 
 	//color picker
 	colorPicker = new ColorPicker();
 	InputManager::registerMouseClickInput(colorPicker);
 
+	//clipboard
+	clipBoard = new ClipBoard();
+	InputManager::registerMouseClickInput(clipBoard);
+	
+	//activate color picker by default
+	activeTool = colorPicker;
+}
+
+void Engine::initVertexData()
+{
 	//image vertex data
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);
@@ -121,21 +164,8 @@ void Engine::init()
 	glEnableVertexAttribArray(1);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	
+
 	glBindVertexArray(0);
-
-	//choose front buffer as both draw and read target
-	glDrawBuffer(GL_FRONT);
-	glReadBuffer(GL_FRONT);
-
-	glClear(GL_COLOR_BUFFER_BIT);
-
-	//no brush uses this for now
-	glLineWidth(4.0f);
-
-	//enable alpha blending
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void Engine::mainLoop()
@@ -166,9 +196,20 @@ void Engine::registerBrush(Brush * brush)
 
 void Engine::useBrush(Brush * brush)
 {
+	activeTool->unuse();
 	activeBrush->unuse();
-	brush->use();
+
 	activeBrush = brush;
+	activeBrush->use();
+}
+
+void Engine::useTool(Tool * tool)
+{
+	activeBrush->unuse();
+	activeTool->unuse();
+
+	activeTool = tool;
+	activeTool->use();
 }
 
 Texture * Engine::loadImage(std::string path)
@@ -186,6 +227,10 @@ void Engine::saveImageToFile(std::string path)
 
 void Engine::drawImage(Texture * image)
 {
+	std::cout << "drawing image" << std::endl;
+
+	glDisable(GL_BLEND); // to prevent blending with clear color
+
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glActiveTexture(GL_TEXTURE0);
@@ -197,6 +242,8 @@ void Engine::drawImage(Texture * image)
 	glBindVertexArray(vao);
 
 	glDrawArrays(GL_TRIANGLES, 0, 6);
+
+	glEnable(GL_BLEND);
 }
 
 void Engine::saveFrameToImage()
@@ -204,7 +251,7 @@ void Engine::saveFrameToImage()
 	unsigned char * pixels = new unsigned char[Window::width * Window::height * 4];
 	glReadPixels(0, 0, Window::width, Window::height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 
-	image->updateContents(Window::width, Window::height, pixels);
+	image->updateContents(Window::width, Window::height, pixels, 4);
 
 	delete pixels;
 
@@ -239,12 +286,23 @@ void Engine::renderFrame()
 		frameSaved = false;
 	}
 
+	if (clipBoard->shouldDrawImage()) {
+		clipBoard->drawImage(imageProgram);
+
+		glFlush();
+		frameSaved = false;
+	}
+
+	//always check if the frame changed
 	if (!frameSaved) {
 		saveFrameToImage();
 	}
 
+	//check window resize last
 	if (Window::windowResized) {
+		Window::windowResized = false;
 		drawImage(image);
+		
 		glFlush();
 	}
 
@@ -259,38 +317,53 @@ void Engine::handleKeyboardInput(int key, int action)
 		std::cout << "Saved image" << std::endl;
 		saveImageToFile("output/niqqa.png");
 	}
-	else if (key == GLFW_KEY_P && action == GLFW_PRESS) { // hold p for color picker
+	else if (key == GLFW_KEY_P && action == GLFW_PRESS) { // p for color picker
 		std::cout << "Color picker active" << std::endl;
-		colorPicker->use();
-		activeBrush->unuse();
+		useTool(colorPicker);
+	}
+	else if (key == GLFW_KEY_F && action == GLFW_PRESS) { // f for filltool
+		std::cout << "Fill tool active" << std::endl;
+		useTool(fillTool);
+	}
+	else if (key == GLFW_KEY_X && action == GLFW_PRESS) { // x to select
+		std::cout << "Clipboard active in select mode" << std::endl;
+		useTool(clipBoard);
+		clipBoard->setCopyMode();
+	}
+	else if (key == GLFW_KEY_V && action == GLFW_PRESS) { // v to paste
+		std::cout << "Clipboard active in paste mode" << std::endl;
+		useTool(clipBoard);
+		clipBoard->setPasteMode();
+	}
 
-	}
-	else if (key == GLFW_KEY_P && action == GLFW_RELEASE) { // release p for no color picker
-		std::cout << "Color picker inactive" << std::endl;
-		colorPicker->unuse();
-		activeBrush->use();
-	}
 	
 	//Brush controls
 	else if (key == GLFW_KEY_1 && action == GLFW_PRESS) { // 1 for pencil
+		std::cout << "Pencil active" << std::endl;
 		useBrush(pencil);
 	}
 	else if (key == GLFW_KEY_2 && action == GLFW_PRESS) { // 2 for eraser
+		std::cout << "Eraser active" << std::endl;
 		useBrush(eraser);
 	}
 	else if (key == GLFW_KEY_3 && action == GLFW_PRESS) { // 3 for caligraphy brush (forward)
+		std::cout << "Caligraphy brush (forward) active" << std::endl;
 		useBrush(caligFBrush);
 	}
 	else if (key == GLFW_KEY_4 && action == GLFW_PRESS) { // 4 for caligraphy brush (backward)
+		std::cout << "Caligraphy brush (backward) active" << std::endl;
 		useBrush(caligBBrush);
 	}
 	else if (key == GLFW_KEY_5 && action == GLFW_PRESS) { // 5 for airbrush
+		std::cout << "Airbrush active" << std::endl;
 		useBrush(airbrush);
 	}
 	else if (key == GLFW_KEY_6 && action == GLFW_PRESS) { // 6 for marker
+		std::cout << "Marker active" << std::endl;
 		useBrush(marker);
 	}
 	
+
 	//Console input controls
 	else if (key == GLFW_KEY_C && action == GLFW_PRESS) { // c to change color
 		int colorChoice;
@@ -355,9 +428,7 @@ void Engine::handleKeyboardInput(int key, int action)
 					ColorBox::backgroundColor = glm::vec3(r, g, b);
 				}
 			}
-
 		}
-
 		system("cls");
 	}
 
