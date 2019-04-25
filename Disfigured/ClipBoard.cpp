@@ -127,16 +127,16 @@ void ClipBoard::copyPixels()
 
 	//calculate bottom left and top right points and clamp coords to window boundaries
 	int bottomLeftX = (int)fmin(x, x2);
-	bottomLeftX = (int)fmax(bottomLeftX, 0);
+	//bottomLeftX = (int)fmax(bottomLeftX, 0);
 
 	int bottomLeftY = (int)fmin(y, y2);
-	bottomLeftY = (int)fmax(bottomLeftY, 0);
+	//bottomLeftY = (int)fmax(bottomLeftY, 0);
 
 	int topRightX = (int)fmax(x, x2);
-	topRightX = (int)fmin(topRightX, Window::width);
+	//topRightX = (int)fmin(topRightX, Window::width);
 
 	int topRightY = (int)fmax(y, y2);
-	topRightY = (int)fmin(topRightY, Window::height);
+	//topRightY = (int)fmin(topRightY, Window::height);
 
 	//calculate width and height
 	width = abs(bottomLeftX - topRightX);
@@ -166,8 +166,9 @@ void ClipBoard::handleMouseClick(int button, int action, double xPosition, doubl
 			//std::cout << "clicked xPos : " << xPosition << " yPos : " << yPosition << std::endl;
 		}
 		if (button == GLFW_MOUSE_BUTTON_1 && action == GLFW_RELEASE) {
-			secondXPos = xPosition;
-			secondYPos = yPosition;
+			//button release can happen outside window boundaries so we have to clamp the coords
+			secondXPos = glm::clamp(xPosition, -1.0, 1.0);
+			secondYPos = glm::clamp(yPosition, -1.0, 1.0);
 			//std::cout << "released xPos : " << xPosition << " yPos : " << yPosition << std::endl;
 			copyPixels();
 		}
