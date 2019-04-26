@@ -159,6 +159,7 @@
     <ClInclude Include="ColorTransform.h" />
     <ClInclude Include="CoordTransform.h" />
     <ClInclude Include="Engine.h" />
+    <ClInclude Include="FileDropControl.h" />
     <ClInclude Include="FillTool.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="KeyboardControl.h" />

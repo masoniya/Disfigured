@@ -149,5 +149,8 @@
     <ClInclude Include="Tool.h">
       <Filter>Header Files\Tools</Filter>
     </ClInclude>
+    <ClInclude Include="FileDropControl.h">
+      <Filter>Header Files\Control</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -9,6 +9,7 @@
 #include "MouseClickControl.h"
 #include "MouseMoveControl.h"
 #include "MouseScrollControl.h"
+#include "FileDropControl.h"
 
 
 class InputManager
@@ -20,24 +21,23 @@ public:
 	static void registerMouseClickInput(MouseClickControl* object);
 	static void registerMouseMoveInput(MouseMoveControl* object);
 	static void registerMouseScrollInput(MouseScrollControl* object);
-
-	//static void updateAllInputObjects();
+	static void registerFileDropInput(FileDropControl* object);
 
 	static void handleKeyboardInput(int key, int action);
 	static void handleMouseClickInput(int button, int action);
 	static void handleMouseMoveInput(double xPosition, double yPosition);
 	static void handleMouseScrollInput(double xOffset, double yOffset);
-
+	static void handleFileDrop(const char* path);
 
 private:
-	static GLFWwindow *window;
 
-	//static std::unordered_map<int, int> buttonMap;
+	static GLFWwindow *window;
 
 	static std::vector<KeyboardControl*> keyboardControlObjects;
 	static std::vector<MouseClickControl*> mouseClickControlObjects;
 	static std::vector<MouseMoveControl*> mouseMoveControlObjects;
 	static std::vector<MouseScrollControl*> mouseScrollControlObjects;
+	static std::vector<FileDropControl*> fileDropControlObjects;
 
 	static double cursorLastXPos;
 	static double cursorLastYPos;

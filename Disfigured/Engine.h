@@ -14,9 +14,10 @@
 #include "Marker.h"
 #include "ClipBoard.h"
 #include "Tool.h"
+#include "FileDropControl.h"
 
 
-class Engine : public KeyboardControl
+class Engine : public KeyboardControl, public FileDropControl
 {
 public:
 
@@ -81,4 +82,5 @@ private:
 	void saveFrameToImage();
 
 	void handleKeyboardInput(int key, int action) override;
+	void handleFileDrop(const char* path) override;
 };

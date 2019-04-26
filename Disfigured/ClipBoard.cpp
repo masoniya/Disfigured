@@ -2,6 +2,7 @@
 
 #include <glad/glad.h>
 #include <glfw/glfw3.h>
+#include <stb/stb_image.h>
 
 #include "ClipBoard.h"
 #include "Window.h"
@@ -63,6 +64,46 @@ bool ClipBoard::shouldDrawImage()
 int ClipBoard::getMode()
 {
 	return mode;
+}
+
+void ClipBoard::loadImage(std::string path)
+{
+	stbi_set_flip_vertically_on_load(true);
+
+	int width, height, numComponents;
+	unsigned char *data = stbi_load(path.c_str(), &width, &height, &numComponents, 0);
+
+	GLenum format;
+
+	if (numComponents == 1) {
+		format = GL_RED;
+	}
+	else if (numComponents == 3) {
+		format = GL_RGB;
+	}
+	else if (numComponents == 4) {
+		format = GL_RGBA;
+	}
+	else {
+		throw std::runtime_error("Unknown color format for texture : " + path + "\n");
+	}
+
+	if (data != nullptr) {
+		glBindTexture(GL_TEXTURE_2D, texture);
+		//update the contents of texture
+		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+
+		//update the size of the printed image
+		int x = 0, y = 0, x2 = width, y2 = height;
+
+		screenToNormalizedScreenCoords(x, y, &firstXPos, &firstYPos, Window::width, Window::height);
+		screenToNormalizedScreenCoords(x2, y2, &secondXPos, &secondYPos, Window::width, Window::height);
+	}
+	else {
+		throw std::runtime_error("Failed to load texture : " + path + "\n");
+	}
+
+	stbi_image_free(data);
 }
 
 void ClipBoard::drawImage(ShaderProgram * program)

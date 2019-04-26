@@ -48,6 +48,7 @@ void Engine::start()
 void Engine::init()
 {
 	InputManager::registerKeyboardInput(this);
+	InputManager::registerFileDropInput(this);
 
 	imageLoaded = false;
 	frameSaved = true;
@@ -56,8 +57,6 @@ void Engine::init()
 
 	initShaders();
 	
-	image = loadImage("resources/coo.png");
-
 	initBrushes();
 	
 	initTools();
@@ -71,6 +70,7 @@ void Engine::init()
 	//prepare buffer for drawing
 	glClear(GL_COLOR_BUFFER_BIT);
 
+	//glEnable(GL_LINE_SMOOTH);
 	//glLineWidth(4.0f);
 
 	//enable alpha blending
@@ -79,6 +79,10 @@ void Engine::init()
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1); //reading from client memory
 	glPixelStorei(GL_PACK_ALIGNMENT, 1); //writing to client memory
+
+	image = loadImage("resources/coo.png"); // don't load images before setting pack/unpack alignment
+
+	//glEnable(GL_SCISSOR_TEST);
 }
 
 void Engine::initShaders()
@@ -248,6 +252,8 @@ void Engine::drawImage(Texture * image)
 
 void Engine::saveFrameToImage()
 {
+	//could be using glCopyTexImage2D()
+
 	unsigned char * pixels = new unsigned char[Window::width * Window::height * 4];
 	glReadPixels(0, 0, Window::width, Window::height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 
@@ -432,4 +438,10 @@ void Engine::handleKeyboardInput(int key, int action)
 		system("cls");
 	}
 
+}
+
+void Engine::handleFileDrop(const char * path)
+{
+	std::cout << "loading image : " << std::string(path) << std::endl;
+	clipBoard->loadImage(path);
 }

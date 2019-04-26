@@ -23,6 +23,8 @@ public:
 	bool shouldDrawImage();
 	int getMode();
 
+	void loadImage(std::string path);
+
 	void drawImage(ShaderProgram * program);
 
 	void setCopyMode();

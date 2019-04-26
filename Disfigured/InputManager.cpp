@@ -9,6 +9,7 @@ static void keyboard_callback(GLFWwindow *window, int key, int scancode, int act
 static void mouse_click_callback(GLFWwindow *window, int button, int action, int mods);
 static void mouse_move_callback(GLFWwindow *window, double xPosition, double yPosition);
 static void mouse_scroll_callback(GLFWwindow *window, double xOffset, double yOffset);
+static void file_drop_callback(GLFWwindow *window, int count, const char** paths);
 
 
 GLFWwindow* InputManager::window;
@@ -17,6 +18,7 @@ std::vector<KeyboardControl*> InputManager::keyboardControlObjects;
 std::vector<MouseClickControl*> InputManager::mouseClickControlObjects;
 std::vector<MouseMoveControl*> InputManager::mouseMoveControlObjects;
 std::vector<MouseScrollControl*> InputManager::mouseScrollControlObjects;
+std::vector<FileDropControl*> InputManager::fileDropControlObjects;
 
 double InputManager::cursorLastXPos;
 double InputManager::cursorLastYPos;
@@ -27,6 +29,7 @@ void InputManager::registerWindow(GLFWwindow * window)
 	glfwSetMouseButtonCallback(window, mouse_click_callback);
 	glfwSetCursorPosCallback(window, mouse_move_callback);
 	glfwSetScrollCallback(window, mouse_scroll_callback);
+	glfwSetDropCallback(window, file_drop_callback);
 }
 
 void InputManager::registerKeyboardInput(KeyboardControl* object)
@@ -47,6 +50,11 @@ void InputManager::registerMouseMoveInput(MouseMoveControl* object)
 void InputManager::registerMouseScrollInput(MouseScrollControl* object)
 {
 	mouseScrollControlObjects.push_back(object);
+}
+
+void InputManager::registerFileDropInput(FileDropControl * object)
+{
+	fileDropControlObjects.push_back(object);
 }
 
 void InputManager::handleKeyboardInput(int key, int action)
@@ -94,6 +102,13 @@ void InputManager::handleMouseScrollInput(double xOffset, double yOffset)
 	}
 }
 
+void InputManager::handleFileDrop(const char* path)
+{
+	for (FileDropControl* object : fileDropControlObjects) {
+		object->handleFileDrop(path);
+	}
+}
+
 
 void keyboard_callback(GLFWwindow * window, int key, int scancode, int action, int mods)
 {
@@ -113,4 +128,9 @@ void mouse_move_callback(GLFWwindow * window, double xPosition, double yPosition
 void mouse_scroll_callback(GLFWwindow * window, double xOffset, double yOffset)
 {
 	InputManager::handleMouseScrollInput(xOffset, yOffset);
+}
+
+static void file_drop_callback(GLFWwindow *window, int count, const char** paths) 
+{
+	InputManager::handleFileDrop(paths[0]);
 }
