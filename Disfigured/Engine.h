@@ -61,6 +61,9 @@ private:
 	bool imageLoaded;
 	bool frameSaved;
 
+	std::string saveDirectory;
+	std::string saveName;
+
 	void init();
 	void mainLoop();
 	void cleanup();
@@ -80,6 +83,7 @@ private:
 	void saveImageToFile(std::string path);
 	void drawImage(Texture* image);
 	void saveFrameToImage();
+	void reloadImage(std::string path);
 
 	void handleKeyboardInput(int key, int action) override;
 	void handleFileDrop(const char* path) override;

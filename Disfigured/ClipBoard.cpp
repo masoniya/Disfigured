@@ -13,7 +13,8 @@ ClipBoard::ClipBoard() :
 	active(false),
 	shouldDraw(false),
 	texture(0),
-	mode(copy)
+	mode(copy),
+	size(1.0f)
 {
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
@@ -66,6 +67,19 @@ int ClipBoard::getMode()
 	return mode;
 }
 
+void ClipBoard::increaseSize()
+{
+	size += 0.1f;
+}
+
+void ClipBoard::decreaseSize()
+{
+	size -= 0.1f;
+	if (size < 0.0f) {
+		size = 0.0f;
+	}
+}
+
 void ClipBoard::loadImage(std::string path)
 {
 	stbi_set_flip_vertically_on_load(true);
@@ -91,7 +105,7 @@ void ClipBoard::loadImage(std::string path)
 	if (data != nullptr) {
 		glBindTexture(GL_TEXTURE_2D, texture);
 		//update the contents of texture
-		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 
 		//update the size of the printed image
 		int x = 0, y = 0, x2 = width, y2 = height;
@@ -112,6 +126,10 @@ void ClipBoard::drawImage(ShaderProgram * program)
 
 	width = (float)abs(firstXPos - secondXPos) / 2;
 	height = (float)abs(firstYPos - secondYPos) / 2;
+
+	//scale image to size
+	width *= size;
+	height *= size;
 
 	xPos = (float)centerXPos;
 	yPos = (float)centerYPos;

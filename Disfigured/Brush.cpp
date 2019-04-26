@@ -80,6 +80,24 @@ void Brush::unuse()
 	active = false;
 }
 
+bool Brush::isActive()
+{
+	return active;
+}
+
+void Brush::increaseSize()
+{
+	size += 1.0f;
+}
+
+void Brush::decreaseSize()
+{
+	size -= 1.0f;
+	if (size < 1.0f) {
+		size = 1.0f;
+	}
+}
+
 void Brush::draw()
 {
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);

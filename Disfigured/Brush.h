@@ -21,6 +21,12 @@ public:
 
 	void unuse();
 
+	bool isActive();
+
+	void increaseSize();
+
+	void decreaseSize();
+
 	virtual void draw();
 
 	bool shouldDrawLines();

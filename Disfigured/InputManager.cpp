@@ -25,6 +25,9 @@ double InputManager::cursorLastYPos;
 
 void InputManager::registerWindow(GLFWwindow * window)
 {
+	std::cout << "setting window" << std::endl;
+	InputManager::window = window;
+
 	glfwSetKeyCallback(window, keyboard_callback);
 	glfwSetMouseButtonCallback(window, mouse_click_callback);
 	glfwSetCursorPosCallback(window, mouse_move_callback);
@@ -107,6 +110,21 @@ void InputManager::handleFileDrop(const char* path)
 	for (FileDropControl* object : fileDropControlObjects) {
 		object->handleFileDrop(path);
 	}
+}
+
+bool InputManager::controlDown()
+{
+	return glfwGetKey(window, GLFW_KEY_RIGHT_CONTROL) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS;
+}
+
+bool InputManager::shiftDown()
+{
+	return glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
+}
+
+bool InputManager::altDown()
+{
+	return glfwGetKey(window, GLFW_KEY_RIGHT_ALT) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS;
 }
 
 

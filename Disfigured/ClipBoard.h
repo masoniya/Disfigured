@@ -22,6 +22,8 @@ public:
 	bool isActive();
 	bool shouldDrawImage();
 	int getMode();
+	void increaseSize();
+	void decreaseSize();
 
 	void loadImage(std::string path);
 
@@ -36,9 +38,12 @@ private:
 	unsigned int vbo;
 
 	bool active;
+
 	int mode;
 
 	bool shouldDraw;
+
+	float size;
 
 	unsigned int texture;
 

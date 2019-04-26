@@ -45,6 +45,41 @@ void Texture::updateContents(int width, int height, void * pixels, int numChanne
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
+void Texture::reload(std::string texturePath)
+{
+	glBindTexture(GL_TEXTURE_2D, texture);
+
+	stbi_set_flip_vertically_on_load(true);
+
+	int width, height, numComponents;
+	unsigned char *data = stbi_load(texturePath.c_str(), &width, &height, &numComponents, 0);
+
+	GLenum format;
+
+	//Use number of components to determine color format
+	if (numComponents == 1) {
+		format = GL_RED;
+	}
+	else if (numComponents == 3) {
+		format = GL_RGB;
+	}
+	else if (numComponents == 4) {
+		format = GL_RGBA;
+	}
+	else {
+		throw std::runtime_error("Unknown color format for texture : " + texturePath + "\n");
+	}
+
+	if (data != nullptr) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+	}
+	else {
+		throw std::runtime_error("Failed to load texture : " + texturePath + "\n");
+	}
+
+	stbi_image_free(data);
+}
+
 void Texture::construct(std::string texturePath, int minFilter, int magFilter)
 {
 	glGenTextures(1, &texture);
@@ -80,10 +115,10 @@ void Texture::construct(std::string texturePath, int minFilter, int magFilter)
 	}
 
 	if (data != nullptr) {
-		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 		//glGenerateMipmap(GL_TEXTURE_2D); //don't need mipmap in this situation
 	}
-	else {			
+	else {
 		throw std::runtime_error("Failed to load texture : " + texturePath + "\n");
 	}
 

@@ -52,6 +52,8 @@ void Engine::init()
 
 	imageLoaded = false;
 	frameSaved = true;
+	saveDirectory = "output/";
+	saveName = "image.png";
 
 	window = new Window(WIDTH, HEIGHT, "Plastic Surgery");
 
@@ -233,8 +235,6 @@ void Engine::drawImage(Texture * image)
 {
 	std::cout << "drawing image" << std::endl;
 
-	glDisable(GL_BLEND); // to prevent blending with clear color
-
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glActiveTexture(GL_TEXTURE0);
@@ -246,8 +246,6 @@ void Engine::drawImage(Texture * image)
 	glBindVertexArray(vao);
 
 	glDrawArrays(GL_TRIANGLES, 0, 6);
-
-	glEnable(GL_BLEND);
 }
 
 void Engine::saveFrameToImage()
@@ -255,13 +253,19 @@ void Engine::saveFrameToImage()
 	//could be using glCopyTexImage2D()
 
 	unsigned char * pixels = new unsigned char[Window::width * Window::height * 4];
-	glReadPixels(0, 0, Window::width, Window::height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+	glReadPixels(0, 0, Window::width, Window::height, GL_RGB, GL_UNSIGNED_BYTE, pixels);
 
-	image->updateContents(Window::width, Window::height, pixels, 4);
+	image->updateContents(Window::width, Window::height, pixels, 3);
 
 	delete pixels;
 
 	frameSaved = true;
+}
+
+void Engine::reloadImage(std::string path)
+{
+	image->reload(path);
+	drawImage(image);
 }
 
 void Engine::renderFrame()
@@ -319,11 +323,7 @@ void Engine::renderFrame()
 void Engine::handleKeyboardInput(int key, int action)
 {
 	//Tool controls
-	if (key == GLFW_KEY_S && action == GLFW_PRESS) { // s to save
-		std::cout << "Saved image" << std::endl;
-		saveImageToFile("output/niqqa.png");
-	}
-	else if (key == GLFW_KEY_P && action == GLFW_PRESS) { // p for color picker
+	if (key == GLFW_KEY_P && action == GLFW_PRESS) { // p for color picker
 		std::cout << "Color picker active" << std::endl;
 		useTool(colorPicker);
 	}
@@ -367,6 +367,29 @@ void Engine::handleKeyboardInput(int key, int action)
 	else if (key == GLFW_KEY_6 && action == GLFW_PRESS) { // 6 for marker
 		std::cout << "Marker active" << std::endl;
 		useBrush(marker);
+	}
+
+
+	//Other controls
+	else if (key == GLFW_KEY_KP_ADD && action == GLFW_PRESS) { // numpad + to increase size
+		if (clipBoard->isActive()) {
+			std::cout << "increased image size" << std::endl;
+			clipBoard->increaseSize();
+		}
+		else if (activeBrush->isActive()) {
+			std::cout << "increased brush size" << std::endl;
+			activeBrush->increaseSize();
+		}
+	}
+	else if (key == GLFW_KEY_KP_SUBTRACT && action == GLFW_PRESS) { // numpad - to decrease size
+		if (clipBoard->isActive()) {
+			std::cout << "decreased image size" << std::endl;
+			clipBoard->decreaseSize();
+		}
+		else if (activeBrush->isActive()) {
+			std::cout << "decreased brush size" << std::endl;
+			activeBrush->decreaseSize();
+		}
 	}
 	
 
@@ -437,11 +460,51 @@ void Engine::handleKeyboardInput(int key, int action)
 		}
 		system("cls");
 	}
+	else if (key == GLFW_KEY_S && action == GLFW_PRESS) { // s to save
+		if (InputManager::controlDown()) {
+			std::cout << "Enter output file name : " << std::endl;
+			std::getline(std::cin, saveName);
+			saveImageToFile(saveDirectory + saveName);
+			std::cout << "saved image as " << saveName << std::endl;
+		}
+		else {
+			saveImageToFile(saveDirectory + saveName);
+			std::cout << "Saved image" << std::endl;
+		}
+	}
+	else if (key == GLFW_KEY_D && action == GLFW_PRESS) { // d to change save directory
+		std::cout << "Enter new output directory : " << std::endl;
+		std::getline(std::cin, saveDirectory);
+		if (saveDirectory[saveDirectory.length() - 1] != '/' && saveDirectory[saveDirectory.length() - 1] != '\\') {
+			//std::cout << "Directory does not end with file separator" << std::endl;
+			saveDirectory += '\\';
+		}
+		std::cout << "Changed output directory to " << saveDirectory << std::endl;
+	}
+	else if (key == GLFW_KEY_N && action == GLFW_PRESS) { // n for empty canvas
+		int choice;
+		std::cout << "Are you sure you want to clear the canvas?" << std::endl << "Yes (1)" << std::endl << "No (2)" << std::endl;
+		std::cin >> choice;
+		if (choice == 1) {
+			glClear(GL_COLOR_BUFFER_BIT);
+		}
+	}
 
 }
 
 void Engine::handleFileDrop(const char * path)
 {
-	std::cout << "loading image : " << std::string(path) << std::endl;
-	clipBoard->loadImage(path);
+	int choice;
+	std::cout << "Reload image (1)" << std::endl << "Copy to clipboard (2)" << std::endl << "Cancel (3)" << std::endl;
+	std::cin >> choice;
+
+	if (choice == 1) {
+		std::cout << "reloading image" << std::endl;
+		reloadImage(path);
+	}
+	else if (choice == 2) {
+		std::cout << "loading image : " << std::string(path) << std::endl;
+		clipBoard->loadImage(path);
+		std::cout << "image loaded to clipboard" << std::endl;
+	}
 }
