@@ -11,23 +11,23 @@
 int WIDTH = 800;
 int HEIGHT = 600;
 
-const char* imageVertPath = "shaders/imageShader.vert";
-const char* imageFragPath = "shaders/imageShader.frag"; 
+const char* imageVertPath = "resources/shaders/imageShader.vert";
+const char* imageFragPath = "resources/shaders/imageShader.frag"; 
 
-const char* brushVertPath = "shaders/brushShader.vert";
-const char* brushFragPath = "shaders/brushShader.frag";
+const char* brushVertPath = "resources/shaders/brushShader.vert";
+const char* brushFragPath = "resources/shaders/brushShader.frag";
 
-const char* pencilGeomPath = "shaders/pencilShader.geom";
-const char* eraserGeomPath = "shaders/eraserShader.geom";
+const char* pencilGeomPath = "resources/shaders/pencilShader.geom";
+const char* eraserGeomPath = "resources/shaders/eraserShader.geom";
 
-const char* caligFGeomPath = "shaders/caligFShader.geom";
-const char* caligBGeomPath = "shaders/caligBShader.geom";
+const char* caligFGeomPath = "resources/shaders/caligFShader.geom";
+const char* caligBGeomPath = "resources/shaders/caligBShader.geom";
 
-const char* airbrushGeomPath = "shaders/airbrushShader.geom";
-const char* airbrushFragPath = "shaders/airbrushShader.frag";
+const char* airbrushGeomPath = "resources/shaders/airbrushShader.geom";
+const char* airbrushFragPath = "resources/shaders/airbrushShader.frag";
 
-const char* markerGeomPath = "shaders/markerShader.geom";
-const char* markerFragpath = "shaders/markerShader.frag";
+const char* markerGeomPath = "resources/shaders/markerShader.geom";
+const char* markerFragpath = "resources/shaders/markerShader.frag";
 
 std::string fontPath = "resources/fonts/arial.ttf";
 
@@ -59,6 +59,9 @@ void Engine::init()
 
 	window = new Window(WIDTH, HEIGHT, "Plastic Surgery");
 
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1); //reading from client memory
+	glPixelStorei(GL_PACK_ALIGNMENT, 1); //writing to client memory
+
 	initShaders();
 	
 	initBrushes();
@@ -80,9 +83,6 @@ void Engine::init()
 	//enable alpha blending
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1); //reading from client memory
-	glPixelStorei(GL_PACK_ALIGNMENT, 1); //writing to client memory
 
 	image = loadImage("resources/textures/coo.png"); // don't load images before setting pack/unpack alignment
 

@@ -109,7 +109,7 @@ ColorBox::ColorBox()
 
 
 	//compile the shaders
-	ShaderProgram* colorProgram = new ShaderProgram("shaders/imageShader.vert", "shaders/imageShader.frag");
+	ShaderProgram* colorProgram = new ShaderProgram("resources/shaders/imageShader.vert", "resources/shaders/imageShader.frag");
 	colorProgram->use();
 	colorProgram->setUniformInt("image", 0);
 
