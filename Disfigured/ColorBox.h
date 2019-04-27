@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 
 
+//Separate window to get colors from by clicking
 class ColorBox
 {
 public:
@@ -17,8 +18,11 @@ public:
 	static double mouseXPos;
 	static double mouseYPos;
 
+	//Actual colors of brushes and eraser
 	static glm::vec3 foregroundColor;
 	static glm::vec3 backgroundColor;
+
 private:
+
 	GLFWwindow* window;
 };

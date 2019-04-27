@@ -25,7 +25,6 @@ double InputManager::cursorLastYPos;
 
 void InputManager::registerWindow(GLFWwindow * window)
 {
-	std::cout << "setting window" << std::endl;
 	InputManager::window = window;
 
 	glfwSetKeyCallback(window, keyboard_callback);

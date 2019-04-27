@@ -23,6 +23,7 @@ void AirBrush::update()
 	}
 }
 
+//The shader uses the time value for random seed
 void AirBrush::draw()
 {
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);

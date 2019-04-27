@@ -1,5 +1,6 @@
 #pragma once
 
+//Interface to get Keyboard input
 class KeyboardControl
 {
 public:

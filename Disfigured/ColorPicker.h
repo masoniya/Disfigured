@@ -13,6 +13,7 @@ public:
 
 	void unuse() override;
 
+	//Get the color of the clicked pixel
 	void handleMouseClick(int button, int action, double xPosition, double yPosition) override;
 
 private:

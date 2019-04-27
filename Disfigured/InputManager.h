@@ -12,6 +12,13 @@
 #include "FileDropControl.h"
 
 
+//Master input control class
+//Provides interfaces for getting keyboard, mouse, and file drop controls
+//Objects that require input should implement the necessary interface and register in the input manager
+//The input manager automaticaly sends proper input data to each registered object on input
+//Provides the ability to swap window to track input for
+//Also provides easy tracking of keyboard modifiers
+
 class InputManager
 {
 public:

@@ -5,6 +5,7 @@
 #include <glm/glm.hpp>
 
 
+//Opengl shader program wrapper class with easy uniform setters
 class ShaderProgram
 {
 public:

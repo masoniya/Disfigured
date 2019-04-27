@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 
 
+//color space transformation functions
 //ranges from 0.0f to 1.0f for all values
 
 void rgb_to_hsl(glm::vec3 rgb, float * h, float * s, float * l);

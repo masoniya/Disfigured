@@ -25,10 +25,12 @@ public:
 	void increaseSize();
 	void decreaseSize();
 
+	//Load image to clipboard directly
 	void loadImage(std::string path);
 
 	void drawImage(ShaderProgram * program);
 
+	//Change clipboard use mode
 	void setCopyMode();
 	void setPasteMode();
 
@@ -43,18 +45,23 @@ private:
 
 	bool shouldDraw;
 
+	//Used to scale image when pasting
 	float size;
 
 	unsigned int texture;
 
+	//The point clicked on during copy mode
 	double firstXPos;
 	double firstYPos;
 
+	//The point released on during copy mode
 	double secondXPos;
 	double secondYPos;
 
+	//The point clicked during paste mode
 	double centerXPos;
 	double centerYPos;
 
+	//Copy area from the canvas
 	void copyPixels();
 };

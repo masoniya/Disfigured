@@ -5,6 +5,7 @@
 #include "Tool.h"
 
 
+//The filltool uses a stack-based floodfill algorithm
 class FillTool : public MouseClickControl, public Tool
 {
 public:
@@ -24,7 +25,10 @@ private:
 
 	bool fill_Color(int xPos, int yPos, unsigned char(&fillColor)[4], unsigned char(&destColor)[4], int width, int height, unsigned char * pixels);
 
+	//compare colors
 	inline bool colors_equal(unsigned char(&first)[4], unsigned char(&second)[4]);
+
+	//float to byte (for colors 0.0f-1.0f -> 0-255)
 	inline char ftob(float fColor);
 
 	bool active;

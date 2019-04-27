@@ -15,12 +15,12 @@
 #include "ClipBoard.h"
 #include "Tool.h"
 #include "FileDropControl.h"
+#include "TextRenderer.h"
 
 
 class Engine : public KeyboardControl, public FileDropControl
 {
 public:
-
 	void start();
 
 private:
@@ -34,6 +34,7 @@ private:
 	FillTool* fillTool;
 	ColorPicker* colorPicker;
 	ClipBoard* clipBoard;
+	TextRenderer* textRenderer;
 
 	//shaders
 	ShaderProgram* imageProgram;

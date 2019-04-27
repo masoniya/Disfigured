@@ -90,13 +90,6 @@ void Window::close()
 	glfwTerminate();
 }
 
-void Window::checkActive()
-{
-	if (glfwGetWindowAttrib(window, GLFW_FOCUSED)){
-		;
-	}
-}
-
 void Window::setActive()
 {
 	glfwFocusWindow(window);

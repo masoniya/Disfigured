@@ -9,6 +9,8 @@
 
 enum class ColorType {foreground, background};
 
+//Base class for all brushes 
+//Allows overriding of input control and drawing behavior
 class Brush : public MouseClickControl, public MouseMoveControl
 {
 public:
@@ -27,6 +29,7 @@ public:
 
 	void decreaseSize();
 
+	//Draw all lines
 	virtual void draw();
 
 	bool shouldDrawLines();
@@ -40,6 +43,7 @@ protected:
 	ColorType colortype;
 	float size;
 
+	//Vector that contains vertex data of lines to be drawn
 	std::vector<float> lineVertexData;
 
 	bool active;

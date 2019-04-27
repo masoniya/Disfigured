@@ -1,5 +1,6 @@
 #pragma once
 
+//Interface to get file drop input
 class FileDropControl
 {
 public:

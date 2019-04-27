@@ -29,6 +29,8 @@ const char* airbrushFragPath = "shaders/airbrushShader.frag";
 const char* markerGeomPath = "shaders/markerShader.geom";
 const char* markerFragpath = "shaders/markerShader.frag";
 
+std::string fontPath = "resources/fonts/arial.ttf";
+
 const float imageVertices[] = {
 	-1.0, -1.0,  0.0, 0.0, //bottom left
 	-1.0,  1.0,  0.0, 1.0, //top left
@@ -82,7 +84,7 @@ void Engine::init()
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1); //reading from client memory
 	glPixelStorei(GL_PACK_ALIGNMENT, 1); //writing to client memory
 
-	image = loadImage("resources/coo.png"); // don't load images before setting pack/unpack alignment
+	image = loadImage("resources/textures/coo.png"); // don't load images before setting pack/unpack alignment
 
 	//glEnable(GL_SCISSOR_TEST);
 }
@@ -147,6 +149,10 @@ void Engine::initTools()
 	//clipboard
 	clipBoard = new ClipBoard();
 	InputManager::registerMouseClickInput(clipBoard);
+
+	//text renderer
+	textRenderer = new TextRenderer(fontPath);
+	//input for the text renderer
 	
 	//activate color picker by default
 	activeTool = colorPicker;

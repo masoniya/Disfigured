@@ -1,5 +1,6 @@
 #pragma once
 
+//Interface to get mousewheel scroll input
 class MouseScrollControl
 {
 public:

@@ -67,7 +67,7 @@ ColorBox::ColorBox()
 	stbi_set_flip_vertically_on_load(true);
 
 	int width, height, numComponents;
-	unsigned char* data = stbi_load("resources/colors.png", &width, &height, &numComponents, 0);
+	unsigned char* data = stbi_load("resources/textures/colors.png", &width, &height, &numComponents, 0);
 
 	if (data != nullptr) {
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);

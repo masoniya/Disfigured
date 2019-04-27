@@ -1,5 +1,6 @@
 #pragma once
 
+//Interface to get mouse click input
 class MouseClickControl
 {
 public:

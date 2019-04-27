@@ -1,5 +1,6 @@
 #pragma once
 
+//Interface for easy toggle of tools
 class Tool
 {
 public :

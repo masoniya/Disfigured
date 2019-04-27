@@ -7,6 +7,7 @@
 #include "ShaderProgram.h"
 
 
+//Container class for opengl contexts
 class Window
 {
 public:
@@ -16,11 +17,12 @@ public:
 	void setClearColor(float r, float g, float b, float a);
 	bool shouldClose();
 	void close();
-	void checkActive();
 	void setActive();
 
+	//current window dimensions
 	static int width;
 	static int height;
+
 	static bool windowResized;
 
 private:

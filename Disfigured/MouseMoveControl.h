@@ -1,5 +1,6 @@
 #pragma once
 
+//Interface to get mouse motion input
 class MouseMoveControl
 {
 public:
