@@ -59,6 +59,9 @@ void Engine::init()
 
 	window = new Window(WIDTH, HEIGHT, "Plastic Surgery");
 
+	canvas = new Canvas();
+	//canvas->use();
+
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1); //reading from client memory
 	glPixelStorei(GL_PACK_ALIGNMENT, 1); //writing to client memory
 
@@ -312,16 +315,28 @@ void Engine::renderFrame()
 	//always check if the frame changed
 	if (!frameSaved) {
 		saveFrameToImage();
+		frameChanged = true;
 	}
 
 	//check window resize last
 	if (Window::windowResized) {
+		///TODO : resize the canvas texture aswell
 		Window::windowResized = false;
 		drawImage(image);
 		
 		glFlush();
 	}
+	
+	//if (frameChanged) {
+	//	//copy the canvas contents to the screen
+	//	canvas->unuse();
+	//	canvas->copyToScreen(imageProgram, vao);
+	//	canvas->use();
+	//	frameChanged = false;
 
+	//	glFlush();
+	//}
+	
 	glFlush();
 }
 
@@ -435,8 +450,10 @@ void Engine::handleKeyboardInput(int key, int action)
 				switch (colorChoice) {
 				case 1:
 					ColorBox::foregroundColor = glm::vec3(r, g, b);
+					break;
 				case 2:
 					ColorBox::backgroundColor = glm::vec3(r, g, b);
+					break;
 				}
 			}
 
@@ -459,8 +476,10 @@ void Engine::handleKeyboardInput(int key, int action)
 				switch (colorChoice) {
 				case 1:
 					ColorBox::foregroundColor = glm::vec3(r, g, b);
+					break;
 				case 2:
 					ColorBox::backgroundColor = glm::vec3(r, g, b);
+					break;
 				}
 			}
 		}

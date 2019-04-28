@@ -16,6 +16,7 @@
 #include "Tool.h"
 #include "FileDropControl.h"
 #include "TextRenderer.h"
+#include "Canvas.h"
 
 
 class Engine : public KeyboardControl, public FileDropControl
@@ -35,6 +36,7 @@ private:
 	ColorPicker* colorPicker;
 	ClipBoard* clipBoard;
 	TextRenderer* textRenderer;
+	Canvas* canvas;
 
 	//shaders
 	ShaderProgram* imageProgram;
@@ -61,6 +63,7 @@ private:
 
 	bool imageLoaded;
 	bool frameSaved;
+	bool frameChanged;
 
 	std::string saveDirectory;
 	std::string saveName;
