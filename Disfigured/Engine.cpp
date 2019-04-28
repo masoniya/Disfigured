@@ -60,7 +60,7 @@ void Engine::init()
 	window = new Window(WIDTH, HEIGHT, "Plastic Surgery");
 
 	canvas = new Canvas();
-	//canvas->use();
+	canvas->use();
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1); //reading from client memory
 	glPixelStorei(GL_PACK_ALIGNMENT, 1); //writing to client memory
@@ -320,22 +320,29 @@ void Engine::renderFrame()
 
 	//check window resize last
 	if (Window::windowResized) {
-		///TODO : resize the canvas texture aswell
-		Window::windowResized = false;
+		canvas->resize();
 		drawImage(image);
+		Window::windowResized = false;
+		frameChanged = true;
 		
 		glFlush();
 	}
 	
-	//if (frameChanged) {
-	//	//copy the canvas contents to the screen
-	//	canvas->unuse();
-	//	canvas->copyToScreen(imageProgram, vao);
-	//	canvas->use();
-	//	frameChanged = false;
+	if (frameChanged) {
+		//copy the canvas contents to the screen
+		canvas->unuse();
+		canvas->copyToScreen(imageProgram, vao);
+		canvas->use();
+		frameChanged = false;
 
-	//	glFlush();
-	//}
+		glFlush();
+	}
+
+	canvas->unuse();
+
+	//put some draw calls here that won't be saved to the frame buffer
+
+	canvas->use();
 	
 	glFlush();
 }

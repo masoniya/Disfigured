@@ -13,9 +13,11 @@ public:
 	void use();
 	void unuse();
 
+	void resize();
+
 private:
 	unsigned int fbo;
-	unsigned int rbo;
+	//unsigned int rbo;
 	unsigned int texture;
 	int width;
 	int height;
