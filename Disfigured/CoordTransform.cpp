@@ -33,6 +33,14 @@ void normalizedScreenToScreenCoords(double normalizedXCoord, double normalizedYC
 	*yCoord = (int)y;
 }
 
+void normalizedScreenToScreenCoords(double normalizedXCoord, double normalizedYCoord, float * xCoord, float * yCoord, int width, int height)
+{
+	double x, y;
+	normalizedScreenToScreenCoords(normalizedXCoord, normalizedYCoord, &x, &y, width, height);
+	*xCoord = (float)x;
+	*yCoord = (float)y;
+}
+
 void normalizedScreenToScreenCoords(double normalizedXCoord, double normalizedYCoord, double * xCoord, double * yCoord, int width, int height)
 {
 	*xCoord = (normalizedXCoord + 1) / 2 * width;
@@ -50,6 +58,14 @@ void normalizedScreenToFlippedScreenCoords(double normalizedXCoord, double norma
 	normalizedScreenToFlippedScreenCoords(normalizedXCoord, normalizedYCoord, &x, &y, width, height);
 	*xCoord = (int)x;
 	*yCoord = (int)y;
+}
+
+void normalizedScreenToFlippedScreenCoords(double normalizedXCoord, double normalizedYCoord, float * xCoord, float * yCoord, int width, int height)
+{
+	double x, y;
+	normalizedScreenToFlippedScreenCoords(normalizedXCoord, normalizedYCoord, &x, &y, width, height);
+	*xCoord = (float)x;
+	*yCoord = (float)y;
 }
 
 void normalizedScreenToFlippedScreenCoords(double normalizedXCoord, double normalizedYCoord, double * xCoord, double * yCoord, int width, int height)

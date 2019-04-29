@@ -3,6 +3,7 @@
 #include "InputManager.h"
 #include "CoordTransform.h"
 #include "Window.h"
+#include "Magnifier.h"
 
 
 static void keyboard_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
@@ -77,9 +78,19 @@ void InputManager::handleMouseClickInput(int button, int action)
 
 void InputManager::handleMouseMoveInput(double xPosition, double yPosition)
 {
+	//transform vertices if magnifier is zoomed in
+	glm::vec4 pos = glm::vec4(xPosition, yPosition, 0.0f, 1.0f);
+	pos = Magnifier::transform * pos;
+	xPosition = pos.x;
+	yPosition = pos.y;
+
 	double normalizedXPosition;
 	double normalizedYPosition;
 	screenToNormalizedScreenCoords(xPosition, yPosition, &normalizedXPosition, &normalizedYPosition, Window::width, Window::height);
+
+	//clamp coordinates to fit window
+	normalizedXPosition = glm::clamp(normalizedXPosition, -1.0, 1.0);
+	normalizedYPosition = glm::clamp(normalizedYPosition, -1.0, 1.0);
 
 	static bool firstMove = true;
 	if (firstMove) {

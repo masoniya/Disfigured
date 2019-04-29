@@ -2,6 +2,8 @@
 
 #include <vector>
 
+#include <glm/glm.hpp>
+
 #include "Tool.h"
 #include "MouseClickControl.h"
 #include "MouseMoveControl.h"
@@ -23,6 +25,9 @@ public:
 	void drawTempBox(ShaderProgram * program);
 
 	bool shouldChangeZoom;
+	bool zoomedIn;
+
+	static glm::mat4 transform;
 
 private:
 
@@ -40,8 +45,6 @@ private:
 
 	bool active;
 	bool shouldDrawTemp;
-
-	bool zoomedIn;
 
 	void handleMouseClick(int button, int action, double xPosition, double yPosition) override;
 	void handleMouseMovement(double xPosition, double yPosition, double xPrevPosition, double yPrevPosition) override;

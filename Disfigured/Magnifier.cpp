@@ -2,9 +2,11 @@
 
 #include <glad/glad.h>
 #include <glfw/glfw3.h>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include "Magnifier.h"
 #include "CoordTransform.h"
+#include "Window.h"
 
 
 const float defaultVertices[] = {
@@ -15,6 +17,10 @@ const float defaultVertices[] = {
 	 1.0f, -1.0f,  1.0f, 0.0f, //bottom right
 	-1.0f,  1.0f,  0.0f, 1.0f, //top left
 };
+
+const glm::mat4 defaultTransform = glm::mat4(1.0f);
+
+glm::mat4 Magnifier::transform = glm::mat4(1.0f);
 
 Magnifier::Magnifier() :
 	active(false),
@@ -57,6 +63,10 @@ std::vector<float> Magnifier::getVertexData()
 		for (int i = 0; i < sizeof(defaultVertices) / sizeof(defaultVertices[0]); i++) {
 			defaultVertexData.push_back(defaultVertices[i]);
 		}
+		transform = defaultTransform;
+
+		transform = glm::mat4(1.0f);
+
 		return defaultVertexData;
 	}
 	
@@ -126,6 +136,15 @@ std::vector<float> Magnifier::getVertexData()
 	vertices.push_back(topLeftTexX);
 	vertices.push_back(topLeftTexY);
 
+	float xOffset;
+	float yOffset;
+
+	normalizedScreenToScreenCoords(tlX , tlY, &xOffset, &yOffset, Window::width, Window::height);
+
+	transform = glm::mat4(1.0f);
+	transform = glm::translate(transform, glm::vec3(xOffset, yOffset, 0.0f));
+	transform = glm::scale(transform, glm::vec3(abs(firstXPos - secondXPos) / 2.0f, abs(firstYPos - secondYPos) / 2.0f, 1.0f));
+
 	return vertices;
 }
 
@@ -170,13 +189,13 @@ void Magnifier::handleMouseClick(int button, int action, double xPosition, doubl
 				firstXPos = xPosition;
 				firstYPos = yPosition;
 				shouldDrawTemp = true;
-				std::cout << "clicked xPos : " << xPosition << " yPos : " << yPosition << std::endl;
+				//std::cout << "clicked xPos : " << xPosition << " yPos : " << yPosition << std::endl;
 			}
 			if (button == GLFW_MOUSE_BUTTON_1 && action == GLFW_RELEASE) {
 				secondXPos = glm::clamp(xPosition, -1.0, 1.0);
 				secondYPos = glm::clamp(yPosition, -1.0, 1.0);
 				shouldDrawTemp = false;
-				std::cout << "released xPos : " << xPosition << " yPos : " << yPosition << std::endl;
+				//std::cout << "released xPos : " << xPosition << " yPos : " << yPosition << std::endl;
 
 				std::cout << "zooming in" << std::endl;
 				

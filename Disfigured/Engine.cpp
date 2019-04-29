@@ -295,7 +295,7 @@ void Engine::renderFrame()
 {
 	if (magnifier->shouldChangeZoom) {
 		canvas->changeVisibleArea(magnifier->getVertexData());
-		std::cout << "changed canvas data" << std::endl;
+		//std::cout << "changed canvas data" << std::endl;
 		magnifier->shouldChangeZoom = false;
 
 		frameChanged = true;
@@ -431,7 +431,7 @@ void Engine::handleKeyboardInput(int key, int action)
 		std::cout << "Text renderer active" << std::endl << "Select mode" << std::endl;
 		useTool(textRenderer);
 	}
-	else if (key == GLFW_KEY_M && action == GLFW_PRESS) {
+	else if (key == GLFW_KEY_M && action == GLFW_PRESS) { // m for magnifier
 		std::cout << "Magnifier active" << std::endl;
 		useTool(magnifier);
 	}
@@ -564,7 +564,7 @@ void Engine::handleKeyboardInput(int key, int action)
 				}
 			}
 		}
-		system("cls");
+		std::cout << "Color Changed" << std::endl;
 	}
 	else if (key == GLFW_KEY_S && action == GLFW_PRESS) { // s to save
 		if (InputManager::controlDown()) {
