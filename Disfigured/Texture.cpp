@@ -7,7 +7,6 @@
 #include "Texture.h"
 
 
-//int Texture::defaultMinFilter = GL_LINEAR_MIPMAP_LINEAR;
 int Texture::defaultMinFilter = GL_LINEAR;
 int Texture::defaultMagFilter = GL_LINEAR;
 

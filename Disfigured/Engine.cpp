@@ -352,6 +352,7 @@ void Engine::renderFrame()
 		canvas->resize();
 		drawImage(image);
 		textRenderer->recalculateProjection();
+		magnifier->recalculateTransform();
 		Window::windowResized = false;
 		frameChanged = true;
 		

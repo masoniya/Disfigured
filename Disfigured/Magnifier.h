@@ -24,6 +24,8 @@ public:
 
 	void drawTempBox(ShaderProgram * program);
 
+	void recalculateTransform();
+
 	bool shouldChangeZoom;
 	bool zoomedIn;
 
@@ -42,6 +44,9 @@ private:
 
 	double currentXPos;
 	double currentYPos;
+
+	float tlX;
+	float tlY;
 
 	bool active;
 	bool shouldDrawTemp;

@@ -93,8 +93,8 @@ std::vector<float> Magnifier::getVertexData()
 	//click point positions
 	float blX = (float)fmin(firstXPos, secondXPos);
 	float blY = (float)fmin(firstYPos, secondYPos);
-	float tlX = (float)fmin(firstXPos, secondXPos);
-	float tlY = (float)fmax(firstYPos, secondYPos);
+	tlX = (float)fmin(firstXPos, secondXPos);
+	tlY = (float)fmax(firstYPos, secondYPos);
 	float brX = (float)fmax(firstXPos, secondXPos);
 	float brY = (float)fmin(firstYPos, secondYPos);
 	float trX = (float)fmax(firstXPos, secondXPos);
@@ -136,14 +136,7 @@ std::vector<float> Magnifier::getVertexData()
 	vertices.push_back(topLeftTexX);
 	vertices.push_back(topLeftTexY);
 
-	float xOffset;
-	float yOffset;
-
-	normalizedScreenToScreenCoords(tlX , tlY, &xOffset, &yOffset, Window::width, Window::height);
-
-	transform = glm::mat4(1.0f);
-	transform = glm::translate(transform, glm::vec3(xOffset, yOffset, 0.0f));
-	transform = glm::scale(transform, glm::vec3(abs(firstXPos - secondXPos) / 2.0f, abs(firstYPos - secondYPos) / 2.0f, 1.0f));
+	recalculateTransform();
 
 	return vertices;
 }
@@ -171,6 +164,20 @@ void Magnifier::drawTempBox(ShaderProgram * program)
 	glBindVertexArray(boxVao);
 
 	glDrawArrays(GL_LINES, 0, 6);
+}
+
+void Magnifier::recalculateTransform()
+{
+	if (zoomedIn) {
+		float xOffset;
+		float yOffset;
+
+		normalizedScreenToScreenCoords(tlX, tlY, &xOffset, &yOffset, Window::width, Window::height);
+
+		transform = glm::mat4(1.0f);
+		transform = glm::translate(transform, glm::vec3(xOffset, yOffset, 0.0f));
+		transform = glm::scale(transform, glm::vec3(abs(firstXPos - secondXPos) / 2.0f, abs(firstYPos - secondYPos) / 2.0f, 1.0f));
+	}
 }
 
 void Magnifier::handleMouseClick(int button, int action, double xPosition, double yPosition)
