@@ -37,12 +37,12 @@ const char* outlineGeomPath = "resources/shaders/outlineShader.geom";
 std::string fontPath = "resources/fonts/arial.ttf";
 
 const float imageVertices[] = {
-	-1.0, -1.0,  0.0, 0.0, //bottom left
-	-1.0,  1.0,  0.0, 1.0, //top left
-	 1.0, -1.0,  1.0, 0.0, //bottom right
-	 1.0,  1.0,  1.0, 1.0, //top right
-	 1.0, -1.0,  1.0, 0.0, //bottom right
-	-1.0,  1.0,  0.0, 1.0, //top left
+	-1.0f, -1.0f,  0.0f, 0.0f, //bottom left
+	-1.0f,  1.0f,  0.0f, 1.0f, //top left
+	 1.0f, -1.0f,  1.0f, 0.0f, //bottom right
+	 1.0f,  1.0f,  1.0f, 1.0f, //top right
+	 1.0f, -1.0f,  1.0f, 0.0f, //bottom right
+	-1.0f,  1.0f,  0.0f, 1.0f, //top left
 };
 
 void Engine::start()
@@ -94,7 +94,6 @@ void Engine::init()
 
 	image = loadImage("resources/textures/coo.png"); // don't load images before setting pack/unpack alignment
 
-	//glEnable(GL_SCISSOR_TEST);
 }
 
 void Engine::initShaders()
@@ -166,6 +165,11 @@ void Engine::initTools()
 	InputManager::registerMouseClickInput(textRenderer);
 	InputManager::registerMouseMoveInput(textRenderer);
 	InputManager::registerKeyboardInput(textRenderer);
+
+	//magnifier
+	magnifier = new Magnifier();
+	InputManager::registerMouseClickInput(magnifier);
+	InputManager::registerMouseMoveInput(magnifier);
 	
 	//activate color picker by default
 	activeTool = colorPicker;
@@ -289,6 +293,14 @@ void Engine::reloadImage(std::string path)
 
 void Engine::renderFrame()
 {
+	if (magnifier->shouldChangeZoom) {
+		canvas->changeVisibleArea(magnifier->getVertexData());
+		std::cout << "changed canvas data" << std::endl;
+		magnifier->shouldChangeZoom = false;
+
+		frameChanged = true;
+	}
+
 	if (imageLoaded) { //draw a freshly loaded image on an empty canvas
 		drawImage(image);
 		imageLoaded = false;
@@ -349,7 +361,7 @@ void Engine::renderFrame()
 	if (frameChanged) {
 		//copy the canvas contents to the screen
 		canvas->unuse();
-		canvas->copyToScreen(imageProgram, vao);
+		canvas->copyToScreen(imageProgram);
 		canvas->use();
 		frameChanged = false;
 
@@ -369,6 +381,13 @@ void Engine::renderFrame()
 
 	if (textRenderer->shouldDrawTempBox()) {
 		textRenderer->drawTempBox(outlineProgram);
+		frameChanged = true;
+
+		glFlush();
+	}
+
+	if (magnifier->shouldDrawTempBox()) {
+		magnifier->drawTempBox(outlineProgram);
 		frameChanged = true;
 
 		glFlush();
@@ -411,6 +430,10 @@ void Engine::handleKeyboardInput(int key, int action)
 	else if (key == GLFW_KEY_T && action == GLFW_PRESS) { // t for text
 		std::cout << "Text renderer active" << std::endl << "Select mode" << std::endl;
 		useTool(textRenderer);
+	}
+	else if (key == GLFW_KEY_M && action == GLFW_PRESS) {
+		std::cout << "Magnifier active" << std::endl;
+		useTool(magnifier);
 	}
 
 	

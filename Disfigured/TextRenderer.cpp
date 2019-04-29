@@ -151,7 +151,7 @@ void TextRenderer::renderText(ShaderProgram * program)
 
 void TextRenderer::drawTempBox(ShaderProgram * program)
 {
-	std::cout << "Drawing temp box" << std::endl;
+	//std::cout << "Drawing temp box" << std::endl;
 	double firstX, firstY;
 	screenToNormalizedScreenCoords(x, Window::height - y, &firstX, &firstY, Window::width, Window::height);
 	float vertices[] = {
@@ -169,7 +169,7 @@ void TextRenderer::drawTempBox(ShaderProgram * program)
 
 	glBindVertexArray(boxVao);
 
-	glDrawArrays(GL_LINES, 0, 6);
+	glDrawArrays(GL_LINES, 0, 2);
 }
 
 void TextRenderer::use()

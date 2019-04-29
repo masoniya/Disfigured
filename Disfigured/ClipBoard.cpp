@@ -199,7 +199,7 @@ void ClipBoard::drawTempBox(ShaderProgram * program)
 
 	glBindVertexArray(boxVao);
 
-	glDrawArrays(GL_LINES, 0, 6);
+	glDrawArrays(GL_LINES, 0, 2);
 }
 
 void ClipBoard::setCopyMode()

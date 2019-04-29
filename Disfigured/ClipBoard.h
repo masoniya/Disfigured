@@ -52,6 +52,7 @@ private:
 	//Used to scale image when pasting
 	float size;
 
+	//the clipboard image currently in memory
 	unsigned int texture;
 
 	//The point clicked on during copy mode

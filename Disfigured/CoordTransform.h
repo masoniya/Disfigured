@@ -13,4 +13,5 @@ void normalizedScreenToFlippedScreenCoords(double normalizedXCoord, double norma
 
 void screenToTexCoords(double xCoord, double yCoord, double *texXCoord, double *texYCoord, int width, int height);
 
+void normalizedScreenToTexCoords(double xCoord, double yCoord, float *texXCoord, float *texYCoord);
 void normalizedScreenToTexCoords(double xCoord, double yCoord, double *texXCoord, double *texYCoord);

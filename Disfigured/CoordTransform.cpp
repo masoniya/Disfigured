@@ -71,6 +71,14 @@ void screenToTexCoords(double xCoord, double yCoord, double * texXCoord, double 
 #endif
 }
 
+void normalizedScreenToTexCoords(double xCoord, double yCoord, float * texXCoord, float * texYCoord)
+{
+	double x, y;
+	normalizedScreenToTexCoords(xCoord, yCoord, &x, &y);
+	*texXCoord = (float)x;
+	*texYCoord = (float)y;
+}
+
 void normalizedScreenToTexCoords(double xCoord, double yCoord, double * texXCoord, double * texYCoord)
 {
 	*texXCoord = (xCoord + 1) / 2;
