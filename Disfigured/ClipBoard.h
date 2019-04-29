@@ -8,20 +8,20 @@
 
 enum clipboardMode {copy, paste};
 
-class ClipBoard : public MouseClickControl, public Tool//, public MouseMoveControl
+class ClipBoard : public Tool, public MouseClickControl, public MouseMoveControl
 {
 public:
 	ClipBoard();
-
-	void handleMouseClick(int button, int action, double xPosition, double yPosition);
-	//void handleMouseMovement(double xPosition, double yPosition, double xPrevPosition, double yPrevPosition);
 
 	void use() override;
 	void unuse() override;
 
 	bool isActive();
 	bool shouldDrawImage();
+	bool shouldDrawTempBox();
+
 	int getMode();
+
 	void increaseSize();
 	void decreaseSize();
 
@@ -29,6 +29,7 @@ public:
 	void loadImage(std::string path);
 
 	void drawImage(ShaderProgram * program);
+	void drawTempBox(ShaderProgram * program);
 
 	//Change clipboard use mode
 	void setCopyMode();
@@ -39,11 +40,14 @@ private:
 	unsigned int vao;
 	unsigned int vbo;
 
+	unsigned int boxVao;
+	unsigned int boxVbo;
+
 	bool active;
+	bool shouldDraw;
+	bool shouldDrawTemp;
 
 	int mode;
-
-	bool shouldDraw;
 
 	//Used to scale image when pasting
 	float size;
@@ -62,6 +66,13 @@ private:
 	double centerXPos;
 	double centerYPos;
 
+	//The current cursor position
+	double currentXPos;
+	double currentYPos;
+
 	//Copy area from the canvas
 	void copyPixels();
+
+	void handleMouseClick(int button, int action, double xPosition, double yPosition);
+	void handleMouseMovement(double xPosition, double yPosition, double xPrevPosition, double yPrevPosition);
 };

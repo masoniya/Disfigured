@@ -12,6 +12,7 @@
 ClipBoard::ClipBoard() :
 	active(false),
 	shouldDraw(false),
+	shouldDrawTemp(false),
 	texture(0),
 	mode(copy),
 	size(1.0f)
@@ -39,6 +40,22 @@ ClipBoard::ClipBoard() :
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glBindVertexArray(0);
+
+	//vertex data for drawing box outline
+	glGenVertexArrays(1, &boxVao);
+	glGenBuffers(1, &boxVbo);
+
+	glBindVertexArray(boxVao);
+
+	glBindBuffer(GL_ARRAY_BUFFER, boxVbo);
+
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
+
+	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glBindVertexArray(0);
 }
 
 
@@ -60,6 +77,11 @@ bool ClipBoard::isActive()
 bool ClipBoard::shouldDrawImage()
 {
 	return shouldDraw;
+}
+
+bool ClipBoard::shouldDrawTempBox()
+{
+	return shouldDrawTemp;
 }
 
 int ClipBoard::getMode()
@@ -160,6 +182,26 @@ void ClipBoard::drawImage(ShaderProgram * program)
 	shouldDraw = false;
 }
 
+void ClipBoard::drawTempBox(ShaderProgram * program)
+{
+	float vertices[] = {
+		(float)firstXPos, (float)firstYPos, (float)currentXPos, (float)currentYPos
+	};
+
+	glBindBuffer(GL_ARRAY_BUFFER, boxVbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	const float boxColor[] = { 0.0f, 0.0f, 0.0f };
+
+	program->use();
+	program->setUniformVec3("color", boxColor);
+
+	glBindVertexArray(boxVao);
+
+	glDrawArrays(GL_LINES, 0, 6);
+}
+
 void ClipBoard::setCopyMode()
 {
 	//std::cout << "copy mode" << std::endl;
@@ -222,12 +264,14 @@ void ClipBoard::handleMouseClick(int button, int action, double xPosition, doubl
 		if (button == GLFW_MOUSE_BUTTON_1 && action == GLFW_PRESS) {
 			firstXPos = xPosition;
 			firstYPos = yPosition;
+			shouldDrawTemp = true;
 			//std::cout << "clicked xPos : " << xPosition << " yPos : " << yPosition << std::endl;
 		}
 		if (button == GLFW_MOUSE_BUTTON_1 && action == GLFW_RELEASE) {
 			//button release can happen outside window boundaries so we have to clamp the coords
 			secondXPos = glm::clamp(xPosition, -1.0, 1.0);
 			secondYPos = glm::clamp(yPosition, -1.0, 1.0);
+			shouldDrawTemp = false;
 			//std::cout << "released xPos : " << xPosition << " yPos : " << yPosition << std::endl;
 			copyPixels();
 		}
@@ -242,3 +286,12 @@ void ClipBoard::handleMouseClick(int button, int action, double xPosition, doubl
 		}
 	}
 }
+
+void ClipBoard::handleMouseMovement(double xPosition, double yPosition, double xPrevPosition, double yPrevPosition)
+{
+	if (active) {
+		currentXPos = glm::clamp(xPosition, -1.0, 1.0);
+		currentYPos = glm::clamp(yPosition, -1.0, 1.0);
+	}
+}
+ 

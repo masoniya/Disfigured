@@ -48,6 +48,7 @@ private:
 	ShaderProgram* airbrushProgram;
 	ShaderProgram* markerProgram;
 	ShaderProgram* textProgram;
+	ShaderProgram* outlineProgram;
 
 	//available brushes
 	Brush* pencil;

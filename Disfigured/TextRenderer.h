@@ -13,6 +13,7 @@
 #include "Tool.h"
 #include "MouseClickControl.h"
 #include "KeyboardControl.h"
+#include "MouseMoveControl.h"
 
 
 struct Character {
@@ -23,12 +24,13 @@ struct Character {
 };
 
 
-class TextRenderer : public Tool, public MouseClickControl, public KeyboardControl
+class TextRenderer : public Tool, public MouseMoveControl, public MouseClickControl, public KeyboardControl
 {
 public:
 	TextRenderer(std::string fontPath);
 
 	void renderText(ShaderProgram * program);
+	void drawTempBox(ShaderProgram * program);
 
 	void use() override;
 	void unuse() override;
@@ -40,16 +42,17 @@ public:
 	void decreaseSize();
 
 	bool shouldDrawText();
+	bool shouldDrawTempBox();
 
 	void recalculateProjection();
-
-	void handleMouseClick(int button, int action, double xPosition, double yPosition) override;
-	void handleKeyboardInput(int key, int action) override;
 
 private:
 
 	unsigned int vao;
 	unsigned int vbo;
+
+	unsigned int boxVao;
+	unsigned int boxVbo;
 
 	int characterHeight;
 	int lineSpacing;
@@ -66,14 +69,23 @@ private:
 	float topLeftX;
 	float topLeftY;
 
+	//current cursor position
+	double currentXPos;
+	double currentYPos;
+
 	glm::mat4 projection;
 
 	bool active;
 	bool inputMode;
+	bool shouldDrawTemp;
 
 	float size;
 
 	std::map<char, Character> characters;
 
 	std::vector<int> charBuffer;
+
+	void handleMouseClick(int button, int action, double xPosition, double yPosition) override;
+	void handleMouseMovement(double xPosition, double yPosition, double xPrevPosition, double yPrevPosition) override;
+	void handleKeyboardInput(int key, int action) override;
 };

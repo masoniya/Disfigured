@@ -11,6 +11,7 @@
 TextRenderer::TextRenderer(std::string fontPath) :
 	active(false),
 	inputMode(false),
+	shouldDrawTemp(false),
 	size(1.0f),
 	characterHeight(24),
 	lineSpacing(3)
@@ -77,6 +78,22 @@ TextRenderer::TextRenderer(std::string fontPath) :
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+
+	//vertex data for drawing box outline
+	glGenVertexArrays(1, &boxVao);
+	glGenBuffers(1, &boxVbo);
+
+	glBindVertexArray(boxVao);
+
+	glBindBuffer(GL_ARRAY_BUFFER, boxVbo);
+
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
+
+	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glBindVertexArray(0);
 }
 
 //Draw all clicked keys in input mode
@@ -125,12 +142,34 @@ void TextRenderer::renderText(ShaderProgram * program)
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
 		topLeftX += (ch.advance >> 6) * size;
-		//some way to next line or sth
 	}
 	glBindVertexArray(0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	charBuffer.clear();
+}
+
+void TextRenderer::drawTempBox(ShaderProgram * program)
+{
+	std::cout << "Drawing temp box" << std::endl;
+	double firstX, firstY;
+	screenToNormalizedScreenCoords(x, Window::height - y, &firstX, &firstY, Window::width, Window::height);
+	float vertices[] = {
+		(float)firstX, (float)firstY, (float)currentXPos, (float)currentYPos
+	};
+
+	glBindBuffer(GL_ARRAY_BUFFER, boxVbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	const float boxColor[] = { 0.0f, 0.0f, 0.0f };
+
+	program->use();
+	program->setUniformVec3("color", boxColor);
+
+	glBindVertexArray(boxVao);
+
+	glDrawArrays(GL_LINES, 0, 6);
 }
 
 void TextRenderer::use()
@@ -171,6 +210,11 @@ bool TextRenderer::shouldDrawText()
 	return !charBuffer.empty();
 }
 
+bool TextRenderer::shouldDrawTempBox()
+{
+	return shouldDrawTemp;
+}
+
 void TextRenderer::recalculateProjection()
 {
 	projection = glm::ortho(0.0f, (float)Window::width, 0.0f, (float)Window::height);
@@ -189,6 +233,7 @@ void TextRenderer::handleMouseClick(int button, int action, double xPosition, do
 		else {
 			if (button == GLFW_MOUSE_BUTTON_1 && action == GLFW_PRESS) {
 				normalizedScreenToFlippedScreenCoords(xPosition, yPosition, &x, &y, Window::width, Window::height);
+				shouldDrawTemp = true;
 			}
 			if (button == GLFW_MOUSE_BUTTON_1 && action == GLFW_RELEASE) {
 				normalizedScreenToFlippedScreenCoords(xPosition, yPosition, &x2, &y2, Window::width, Window::height);
@@ -199,20 +244,27 @@ void TextRenderer::handleMouseClick(int button, int action, double xPosition, do
 				float bottomLeftX = (float)fmin(x, x2);
 				float bottomLeftY = (float)fmin(y, y2);
 				
-				//bottomLeftY -= characterHeight * size + lineSpacing;
-
 				topLeftX = (float)fmin(x, x2);
 				topLeftY = (float)fmax(y, y2);
 
 				topLeftY -= characterHeight * size + lineSpacing;
 
-				glScissor((int)bottomLeftX, (int)bottomLeftY, width, height);
+				glScissor((int)bottomLeftX + 1, (int)bottomLeftY + 1, width - 2, height - 2);
 
 				inputMode = true;
 				glEnable(GL_SCISSOR_TEST);
 				std::cout << "Input mode" << std::endl;
+				shouldDrawTemp = false;
 			}
 		}
+	}
+}
+
+void TextRenderer::handleMouseMovement(double xPosition, double yPosition, double xPrevPosition, double yPrevPosition)
+{
+	if (active) {
+		currentXPos = glm::clamp(xPosition, -1.0, 1.0);
+		currentYPos = glm::clamp(yPosition, -1.0, 1.0);
 	}
 }
 

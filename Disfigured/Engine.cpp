@@ -32,6 +32,8 @@ const char* markerFragpath = "resources/shaders/markerShader.frag";
 const char* textVertPath = "resources/shaders/textShader.vert";
 const char* textFragPath = "resources/shaders/textShader.frag";
 
+const char* outlineGeomPath = "resources/shaders/outlineShader.geom";
+
 std::string fontPath = "resources/fonts/arial.ttf";
 
 const float imageVertices[] = {
@@ -106,6 +108,7 @@ void Engine::initShaders()
 	markerProgram = new ShaderProgram(brushVertPath, markerGeomPath, markerFragpath); //marker
 	airbrushProgram = new ShaderProgram(brushVertPath, airbrushGeomPath, airbrushFragPath); //airbrush
 	textProgram = new ShaderProgram(textVertPath, textFragPath); //text
+	outlineProgram = new ShaderProgram(brushVertPath, outlineGeomPath, brushFragPath); //box outline
 }
 
 void Engine::initBrushes()
@@ -156,12 +159,13 @@ void Engine::initTools()
 	//clipboard
 	clipBoard = new ClipBoard();
 	InputManager::registerMouseClickInput(clipBoard);
+	InputManager::registerMouseMoveInput(clipBoard);
 
 	//text renderer
 	textRenderer = new TextRenderer(fontPath);
 	InputManager::registerMouseClickInput(textRenderer);
+	InputManager::registerMouseMoveInput(textRenderer);
 	InputManager::registerKeyboardInput(textRenderer);
-	//input for the text renderer
 	
 	//activate color picker by default
 	activeTool = colorPicker;
@@ -354,11 +358,25 @@ void Engine::renderFrame()
 
 	canvas->unuse();
 
-	//put some draw calls here that won't be saved to the framebuffer
+	//put temp draw calls here
+
+	if (clipBoard->shouldDrawTempBox()) {
+		clipBoard->drawTempBox(outlineProgram);
+		frameChanged = true;
+
+		glFlush();
+	}
+
+	if (textRenderer->shouldDrawTempBox()) {
+		textRenderer->drawTempBox(outlineProgram);
+		frameChanged = true;
+
+		glFlush();
+	}
 
 	canvas->use();
 
-	//for the magnifier we need to transform the rendering commands with appropriate translation and possibly scale
+	//for the magnifier we need to transform the rendering commands with appropriate translation and scale
 	
 	glFlush();
 }
