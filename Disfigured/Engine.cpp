@@ -29,15 +29,20 @@ const char* airbrushFragPath = "resources/shaders/airbrushShader.frag";
 const char* markerGeomPath = "resources/shaders/markerShader.geom";
 const char* markerFragpath = "resources/shaders/markerShader.frag";
 
+const char* textVertPath = "resources/shaders/textShader.vert";
+const char* textFragPath = "resources/shaders/textShader.frag";
+
+const char* outlineGeomPath = "resources/shaders/outlineShader.geom";
+
 std::string fontPath = "resources/fonts/arial.ttf";
 
 const float imageVertices[] = {
-	-1.0, -1.0,  0.0, 0.0, //bottom left
-	-1.0,  1.0,  0.0, 1.0, //top left
-	 1.0, -1.0,  1.0, 0.0, //bottom right
-	 1.0,  1.0,  1.0, 1.0, //top right
-	 1.0, -1.0,  1.0, 0.0, //bottom right
-	-1.0,  1.0,  0.0, 1.0, //top left
+	-1.0f, -1.0f,  0.0f, 0.0f, //bottom left
+	-1.0f,  1.0f,  0.0f, 1.0f, //top left
+	 1.0f, -1.0f,  1.0f, 0.0f, //bottom right
+	 1.0f,  1.0f,  1.0f, 1.0f, //top right
+	 1.0f, -1.0f,  1.0f, 0.0f, //bottom right
+	-1.0f,  1.0f,  0.0f, 1.0f, //top left
 };
 
 void Engine::start()
@@ -89,7 +94,6 @@ void Engine::init()
 
 	image = loadImage("resources/textures/coo.png"); // don't load images before setting pack/unpack alignment
 
-	//glEnable(GL_SCISSOR_TEST);
 }
 
 void Engine::initShaders()
@@ -102,6 +106,8 @@ void Engine::initShaders()
 	caligBProgram = new ShaderProgram(brushVertPath, caligBGeomPath, brushFragPath); //caligraphy brush (backward)
 	markerProgram = new ShaderProgram(brushVertPath, markerGeomPath, markerFragpath); //marker
 	airbrushProgram = new ShaderProgram(brushVertPath, airbrushGeomPath, airbrushFragPath); //airbrush
+	textProgram = new ShaderProgram(textVertPath, textFragPath); //text
+	outlineProgram = new ShaderProgram(brushVertPath, outlineGeomPath, brushFragPath); //box outline
 }
 
 void Engine::initBrushes()
@@ -152,10 +158,18 @@ void Engine::initTools()
 	//clipboard
 	clipBoard = new ClipBoard();
 	InputManager::registerMouseClickInput(clipBoard);
+	InputManager::registerMouseMoveInput(clipBoard);
 
 	//text renderer
 	textRenderer = new TextRenderer(fontPath);
-	//input for the text renderer
+	InputManager::registerMouseClickInput(textRenderer);
+	InputManager::registerMouseMoveInput(textRenderer);
+	InputManager::registerKeyboardInput(textRenderer);
+
+	//magnifier
+	magnifier = new Magnifier();
+	InputManager::registerMouseClickInput(magnifier);
+	InputManager::registerMouseMoveInput(magnifier);
 	
 	//activate color picker by default
 	activeTool = colorPicker;
@@ -279,6 +293,14 @@ void Engine::reloadImage(std::string path)
 
 void Engine::renderFrame()
 {
+	if (magnifier->shouldChangeZoom) {
+		canvas->changeVisibleArea(magnifier->getVertexData());
+		//std::cout << "changed canvas data" << std::endl;
+		magnifier->shouldChangeZoom = false;
+
+		frameChanged = true;
+	}
+
 	if (imageLoaded) { //draw a freshly loaded image on an empty canvas
 		drawImage(image);
 		imageLoaded = false;
@@ -312,6 +334,13 @@ void Engine::renderFrame()
 		frameSaved = false;
 	}
 
+	if (textRenderer->shouldDrawText()) {
+		textRenderer->renderText(textProgram);
+
+		glFlush();
+		frameSaved = false;
+	}
+
 	//always check if the frame changed
 	if (!frameSaved) {
 		saveFrameToImage();
@@ -322,6 +351,7 @@ void Engine::renderFrame()
 	if (Window::windowResized) {
 		canvas->resize();
 		drawImage(image);
+		textRenderer->recalculateProjection();
 		Window::windowResized = false;
 		frameChanged = true;
 		
@@ -331,7 +361,7 @@ void Engine::renderFrame()
 	if (frameChanged) {
 		//copy the canvas contents to the screen
 		canvas->unuse();
-		canvas->copyToScreen(imageProgram, vao);
+		canvas->copyToScreen(imageProgram);
 		canvas->use();
 		frameChanged = false;
 
@@ -340,9 +370,32 @@ void Engine::renderFrame()
 
 	canvas->unuse();
 
-	//put some draw calls here that won't be saved to the frame buffer
+	//put temp draw calls here
+
+	if (clipBoard->shouldDrawTempBox()) {
+		clipBoard->drawTempBox(outlineProgram);
+		frameChanged = true;
+
+		glFlush();
+	}
+
+	if (textRenderer->shouldDrawTempBox()) {
+		textRenderer->drawTempBox(outlineProgram);
+		frameChanged = true;
+
+		glFlush();
+	}
+
+	if (magnifier->shouldDrawTempBox()) {
+		magnifier->drawTempBox(outlineProgram);
+		frameChanged = true;
+
+		glFlush();
+	}
 
 	canvas->use();
+
+	//for the magnifier we need to transform the rendering commands with appropriate translation and scale
 	
 	glFlush();
 }
@@ -350,6 +403,11 @@ void Engine::renderFrame()
 //master keyboard control
 void Engine::handleKeyboardInput(int key, int action)
 {
+	//if the text renderer is taking input don't do anything
+	if (textRenderer->isInputMode()) {
+		return;
+	}
+
 	//Tool controls
 	if (key == GLFW_KEY_P && action == GLFW_PRESS) { // p for color picker
 		std::cout << "Color picker active" << std::endl;
@@ -368,6 +426,14 @@ void Engine::handleKeyboardInput(int key, int action)
 		std::cout << "Clipboard active in paste mode" << std::endl;
 		useTool(clipBoard);
 		clipBoard->setPasteMode();
+	}
+	else if (key == GLFW_KEY_T && action == GLFW_PRESS) { // t for text
+		std::cout << "Text renderer active" << std::endl << "Select mode" << std::endl;
+		useTool(textRenderer);
+	}
+	else if (key == GLFW_KEY_M && action == GLFW_PRESS) { // m for magnifier
+		std::cout << "Magnifier active" << std::endl;
+		useTool(magnifier);
 	}
 
 	
@@ -404,6 +470,10 @@ void Engine::handleKeyboardInput(int key, int action)
 			std::cout << "increased image size" << std::endl;
 			clipBoard->increaseSize();
 		}
+		else if (textRenderer->isActive() && !textRenderer->isInputMode()) {
+			std::cout << "increased text size" << std::endl;
+			textRenderer->increaseSize();
+		}
 		else if (activeBrush->isActive()) {
 			std::cout << "increased brush size" << std::endl;
 			activeBrush->increaseSize();
@@ -413,6 +483,10 @@ void Engine::handleKeyboardInput(int key, int action)
 		if (clipBoard->isActive()) {
 			std::cout << "decreased image size" << std::endl;
 			clipBoard->decreaseSize();
+		}
+		else if (textRenderer->isActive() && !textRenderer->isInputMode()) {
+			std::cout << "decreased text size" << std::endl;
+			textRenderer->decreaseSize();
 		}
 		else if (activeBrush->isActive()) {
 			std::cout << "decreased brush size" << std::endl;
@@ -490,7 +564,7 @@ void Engine::handleKeyboardInput(int key, int action)
 				}
 			}
 		}
-		system("cls");
+		std::cout << "Color Changed" << std::endl;
 	}
 	else if (key == GLFW_KEY_S && action == GLFW_PRESS) { // s to save
 		if (InputManager::controlDown()) {

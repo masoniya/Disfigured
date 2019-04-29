@@ -143,6 +143,7 @@
     <ClCompile Include="FillTool.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="Magnifier.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Marker.cpp" />
     <ClCompile Include="save.c" />
@@ -166,6 +167,7 @@
     <ClInclude Include="FillTool.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="KeyboardControl.h" />
+    <ClInclude Include="Magnifier.h" />
     <ClInclude Include="Marker.h" />
     <ClInclude Include="MouseClickControl.h" />
     <ClInclude Include="MouseMoveControl.h" />

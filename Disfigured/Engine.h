@@ -17,6 +17,7 @@
 #include "FileDropControl.h"
 #include "TextRenderer.h"
 #include "Canvas.h"
+#include "Magnifier.h"
 
 
 class Engine : public KeyboardControl, public FileDropControl
@@ -37,6 +38,7 @@ private:
 	ClipBoard* clipBoard;
 	TextRenderer* textRenderer;
 	Canvas* canvas;
+	Magnifier* magnifier;
 
 	//shaders
 	ShaderProgram* imageProgram;
@@ -47,6 +49,8 @@ private:
 	ShaderProgram* caligBProgram;
 	ShaderProgram* airbrushProgram;
 	ShaderProgram* markerProgram;
+	ShaderProgram* textProgram;
+	ShaderProgram* outlineProgram;
 
 	//available brushes
 	Brush* pencil;
