@@ -29,6 +29,9 @@ const char* airbrushFragPath = "resources/shaders/airbrushShader.frag";
 const char* markerGeomPath = "resources/shaders/markerShader.geom";
 const char* markerFragpath = "resources/shaders/markerShader.frag";
 
+const char* textVertPath = "resources/shaders/textShader.vert";
+const char* textFragPath = "resources/shaders/textShader.frag";
+
 std::string fontPath = "resources/fonts/arial.ttf";
 
 const float imageVertices[] = {
@@ -102,6 +105,7 @@ void Engine::initShaders()
 	caligBProgram = new ShaderProgram(brushVertPath, caligBGeomPath, brushFragPath); //caligraphy brush (backward)
 	markerProgram = new ShaderProgram(brushVertPath, markerGeomPath, markerFragpath); //marker
 	airbrushProgram = new ShaderProgram(brushVertPath, airbrushGeomPath, airbrushFragPath); //airbrush
+	textProgram = new ShaderProgram(textVertPath, textFragPath); //text
 }
 
 void Engine::initBrushes()
@@ -155,6 +159,8 @@ void Engine::initTools()
 
 	//text renderer
 	textRenderer = new TextRenderer(fontPath);
+	InputManager::registerMouseClickInput(textRenderer);
+	InputManager::registerKeyboardInput(textRenderer);
 	//input for the text renderer
 	
 	//activate color picker by default
@@ -312,6 +318,13 @@ void Engine::renderFrame()
 		frameSaved = false;
 	}
 
+	if (textRenderer->shouldDrawText()) {
+		textRenderer->renderText(textProgram);
+
+		glFlush();
+		frameSaved = false;
+	}
+
 	//always check if the frame changed
 	if (!frameSaved) {
 		saveFrameToImage();
@@ -322,6 +335,7 @@ void Engine::renderFrame()
 	if (Window::windowResized) {
 		canvas->resize();
 		drawImage(image);
+		textRenderer->recalculateProjection();
 		Window::windowResized = false;
 		frameChanged = true;
 		
@@ -340,9 +354,11 @@ void Engine::renderFrame()
 
 	canvas->unuse();
 
-	//put some draw calls here that won't be saved to the frame buffer
+	//put some draw calls here that won't be saved to the framebuffer
 
 	canvas->use();
+
+	//for the magnifier we need to transform the rendering commands with appropriate translation and possibly scale
 	
 	glFlush();
 }
@@ -350,6 +366,11 @@ void Engine::renderFrame()
 //master keyboard control
 void Engine::handleKeyboardInput(int key, int action)
 {
+	//if the text renderer is taking input don't do anything
+	if (textRenderer->isInputMode()) {
+		return;
+	}
+
 	//Tool controls
 	if (key == GLFW_KEY_P && action == GLFW_PRESS) { // p for color picker
 		std::cout << "Color picker active" << std::endl;
@@ -368,6 +389,10 @@ void Engine::handleKeyboardInput(int key, int action)
 		std::cout << "Clipboard active in paste mode" << std::endl;
 		useTool(clipBoard);
 		clipBoard->setPasteMode();
+	}
+	else if (key == GLFW_KEY_T && action == GLFW_PRESS) { // t for text
+		std::cout << "Text renderer active" << std::endl << "Select mode" << std::endl;
+		useTool(textRenderer);
 	}
 
 	
@@ -404,6 +429,10 @@ void Engine::handleKeyboardInput(int key, int action)
 			std::cout << "increased image size" << std::endl;
 			clipBoard->increaseSize();
 		}
+		else if (textRenderer->isActive() && !textRenderer->isInputMode()) {
+			std::cout << "increased text size" << std::endl;
+			textRenderer->increaseSize();
+		}
 		else if (activeBrush->isActive()) {
 			std::cout << "increased brush size" << std::endl;
 			activeBrush->increaseSize();
@@ -413,6 +442,10 @@ void Engine::handleKeyboardInput(int key, int action)
 		if (clipBoard->isActive()) {
 			std::cout << "decreased image size" << std::endl;
 			clipBoard->decreaseSize();
+		}
+		else if (textRenderer->isActive() && !textRenderer->isInputMode()) {
+			std::cout << "decreased text size" << std::endl;
+			textRenderer->decreaseSize();
 		}
 		else if (activeBrush->isActive()) {
 			std::cout << "decreased brush size" << std::endl;

@@ -47,6 +47,7 @@ private:
 	ShaderProgram* caligBProgram;
 	ShaderProgram* airbrushProgram;
 	ShaderProgram* markerProgram;
+	ShaderProgram* textProgram;
 
 	//available brushes
 	Brush* pencil;

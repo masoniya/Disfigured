@@ -6,6 +6,14 @@
 //#define PRINT_DEBUG
 
 
+void screenToNormalizedScreenCoords(double xCoord, double yCoord, float * normalizedXCoord, float * normalizedYCoord, int width, int height)
+{
+	double x, y;
+	screenToNormalizedScreenCoords(xCoord, yCoord, &x, &y, width, height);
+	*normalizedXCoord = (float)x;
+	*normalizedYCoord = (float)y;
+}
+
 void screenToNormalizedScreenCoords(double xCoord, double yCoord, double * normalizedXCoord, double * normalizedYCoord, int width, int height)
 {
 	*normalizedXCoord = (xCoord / width) * 2 - 1;
@@ -34,6 +42,22 @@ void normalizedScreenToScreenCoords(double normalizedXCoord, double normalizedYC
 	std::cout << normalizedXCoord << " : " << *xCoord << std::endl;
 	std::cout << normalizedYCoord << " : " << *yCoord << std::endl;
 #endif
+}
+
+void normalizedScreenToFlippedScreenCoords(double normalizedXCoord, double normalizedYCoord, int * xCoord, int * yCoord, int width, int height)
+{
+	double x, y;
+	normalizedScreenToFlippedScreenCoords(normalizedXCoord, normalizedYCoord, &x, &y, width, height);
+	*xCoord = (int)x;
+	*yCoord = (int)y;
+}
+
+void normalizedScreenToFlippedScreenCoords(double normalizedXCoord, double normalizedYCoord, double * xCoord, double * yCoord, int width, int height)
+{
+	double x, y;
+	normalizedScreenToScreenCoords(normalizedXCoord, normalizedYCoord, &x, &y, width, height);
+	*xCoord = x;
+	*yCoord = height - y;
 }
 
 void screenToTexCoords(double xCoord, double yCoord, double * texXCoord, double * texYCoord, int width, int height)

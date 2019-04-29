@@ -4,7 +4,6 @@
 
 #include "Window.h"
 #include "InputManager.h"
-#include "Engine.h"
 
 
 static void framebufferSizeCallback(GLFWwindow *window, int width, int height);
